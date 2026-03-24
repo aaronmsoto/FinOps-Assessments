@@ -35,6 +35,9 @@ Specification:
   - <string or null>
   Weight: <float >= 0>               # priority/risk weight
   Formula: null                       # or multiline string using |-
+  Score Type: <ScoreTypeEnum>         # YAML alias — field name is ScoreType
+                                      # Values: binary | bucket | multi_bucket | percent |
+                                      #         sequential | threshold | calculation (default)
   Scoring:                            # min 1, max 11 entries
   - Score: <int 0-10>
     Condition: <string or null>
@@ -141,6 +144,7 @@ Overrides:
 | Description | Max 1000 characters |
 | Version | Valid semver (e.g., `1.0.0`) |
 | Status | One of: `Proposed`, `Accepted`, `Deprecated` |
+| Score Type | One of: `binary`, `bucket`, `multi_bucket`, `percent`, `sequential`, `threshold`, `calculation` |
 
 ---
 

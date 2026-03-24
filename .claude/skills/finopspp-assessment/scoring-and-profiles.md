@@ -6,21 +6,23 @@ All scores are integers 0–10. The `Formula` field describes how to compute; `S
 
 ---
 
-## Score Types (6)
+## Score Types (7)
 
 | Type | Slug | Use When |
 |---|---|---|
-| Binary | `binary` | Yes/no question (good first issue for contributors) |
+| Binary | `binary` | Yes/no question (good first action for contributors) |
 | Bucket of Accomplishments | `bucket` | Unordered checklist of independent tasks |
-| Percentage Calculation | `percent` | Clear path to 100% completion |
-| Other Mathematical Formulae | `calculation` | Custom numeric formula |
 | Multiple Weighted Buckets | `multi_bucket` | Multiple weighted task groups |
 | Sequential Process | `sequential` | Ordered steps that must be done in sequence |
+| Threshold Process | `threshold` | Ordered levels where you can skip earlier ones |
+| Percentage Calculation | `percent` | Clear path to 100% completion |
+| Other Mathematical Formulae | `calculation` | Custom numeric formula (default/catch-all) |
 
 ### Binary
 
 ```yaml
 Formula: null
+Score Type: binary
 Scoring:
 - Score: 0
   Condition: None
@@ -37,6 +39,7 @@ Formula: |-
   * Determine how optimizations and lower run rate will impact the forecast on a rolling basis
 
   10*Ceil(x/3)
+Score Type: bucket
 Scoring:
 - Score: 0
   Condition: No items completed
@@ -50,42 +53,6 @@ Scoring:
 
 Pattern: `10*Ceil(x/N)` where N = number of bucket items. Items are independent and unordered.
 
-### Percentage Calculation
-
-```yaml
-Formula: Unallocated Shared CSP Effective Cloud Cost / Total CSP Effective Cloud Cost
-Scoring:
-- Score: 0
-  Condition: 0%
-- Score: 1
-  Condition: 10%
-# ... one entry per 10% increment ...
-- Score: 10
-  Condition: Near 100%
-```
-
-11 entries (Score 0 through 10), each mapping to a 10% band.
-
-### Sequential Process
-
-```yaml
-Formula: |-
-  1. item 1
-  2. item 2
-  3. item 3
-Scoring:
-- Score: 0
-  Condition: No items completed
-- Score: 4
-  Condition: item 1 completed
-- Score: 7
-  Condition: items 1 and 2 completed
-- Score: 10
-  Condition: items 1, 2, and 3 completed
-```
-
-Same `Ceil` pattern as bucket, but items **must** be completed in order.
-
 ### Multiple Weighted Buckets
 
 ```yaml
@@ -97,6 +64,7 @@ Formula: |-
   3. Bucket
       * item 1
       * item 2
+Score Type: multi_bucket
 Scoring:
 - Score: 0
   Condition: no items completed
@@ -111,6 +79,72 @@ Scoring:
 ```
 
 Earlier buckets are weighted more heavily than later ones.
+
+### Sequential Process
+
+```yaml
+Formula: |-
+  1. item 1
+  2. item 2
+  3. item 3
+Score Type: sequential
+Scoring:
+- Score: 0
+  Condition: No items completed
+- Score: 4
+  Condition: item 1 completed
+- Score: 7
+  Condition: items 1 and 2 completed
+- Score: 10
+  Condition: items 1, 2, and 3 completed
+```
+
+Same `Ceil` pattern as bucket, but items **must** be completed in order.
+
+### Threshold Process
+
+```yaml
+Formula: null
+Score Type: threshold
+Scoring:
+- Score: 0
+  Condition: None
+- Score: 1
+  Condition: Annual
+- Score: 2
+  Condition: Quarterly
+- Score: 5
+  Condition: Monthly
+- Score: 7
+  Condition: Bi-Weekly
+- Score: 8
+  Condition: Weekly
+- Score: 10
+  Condition: Daily
+```
+
+Like sequential, but you do **not** need to meet all previous levels to achieve a higher score. Each level is an independent threshold.
+
+### Percentage Calculation
+
+```yaml
+Formula: Unallocated Shared CSP Effective Cloud Cost / Total CSP Effective Cloud Cost
+Score Type: percent
+Scoring:
+- Score: 0
+  Condition: 0%
+- Score: 1
+  Condition: 10%
+# ... one entry per 10% increment ...
+- Score: 10
+  Condition: Near 100%
+```
+
+11 entries (Score 0 through 10), each mapping to a 10% band. A sub-type of threshold — works well with pure mathematical formulas.
+
+### Other Mathematical Formulae
+
+`calculation` is the default `Score Type` and acts as a catch-all when other types don't clearly apply.
 
 ---
 
