@@ -17,7 +17,7 @@
     #app { min-height: 100vh; display: flex; flex-direction: column; }
 
     /* Header */
-    #app-header { background: #0080AF; color: #fff; padding: 12px 24px; }
+    #app-header { background: #0080AF; color: #fff; padding: 12px 24px; position: sticky; top: 0; z-index: 500; }
     .header-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
     .header-titles h1 { font-size: 20px; font-weight: 600; line-height: 1.3; }
     .header-titles p { font-size: 13px; font-weight: 300; opacity: 0.85; }
@@ -79,6 +79,17 @@
     <main id="app-main">
       <section id="tab-results" class="tab-content active">
         <div id="poster-container"></div>
+        <div class="charts-section">
+          <h3 class="chart-heading">Domain Maturity</h3>
+          <canvas id="chart-domains"></canvas>
+          <h3 class="chart-heading">Capability Maturity</h3>
+          <canvas id="chart-capabilities"></canvas>
+          <h3 class="chart-heading">Action Score Distribution</h3>
+          <canvas id="chart-distribution"></canvas>
+        </div>
+        <div class="notes-section">
+          <div id="assessment-notes" class="notes-content" contenteditable="true" data-placeholder="Click to add notes, commentary, or recommendations..."></div>
+        </div>
       </section>
       <section id="tab-assess" class="tab-content hidden">
         <div id="assess-container"></div>

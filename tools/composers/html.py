@@ -63,7 +63,21 @@ def assessment_generate(profile: str, base_path: str, domains: list[dict]) -> No
     js_block = f'<script>\n{js_content}\n</script>'
     html = html.replace('<!-- INLINE_JS_PLACEHOLDER -->', js_block)
 
-    # 8. Write output
+    # 9. Bundle readonly.html template for Save As HTML
+    # Escape </script> tags inside the template to prevent premature closing
+    readonly_path = os.path.join(template_dir, 'readonly.html')
+    if os.path.isfile(readonly_path):
+        with open(readonly_path, 'r', encoding='utf-8') as f:
+            readonly_content = f.read()
+        readonly_content = readonly_content.replace('</script>', '<\\/script>')
+        readonly_block = (
+            '<script type="text/html" id="readonly-template">\n'
+            f'{readonly_content}\n'
+            '</script>\n'
+        )
+        html = html.replace('</body>', f'{readonly_block}</body>')
+
+    # 10. Write output
     os.makedirs(base_path, exist_ok=True)
     output_path = os.path.join(base_path, f'{profile} Assessment.html')
     with open(output_path, 'w', encoding='utf-8') as f:

@@ -19,6 +19,7 @@ const App = (() => {
     Config.render(specData, state);
 
     applyConfig();
+    initNotes();
     recalculate();
   }
 
@@ -101,6 +102,10 @@ const App = (() => {
           tab.classList.remove('hidden');
           tab.classList.add('active');
         }
+        // Redraw charts when switching to Results tab
+        if (btn.dataset.tab === 'results') {
+          requestAnimationFrame(() => recalculate());
+        }
       });
     });
   }
@@ -155,10 +160,25 @@ const App = (() => {
     emit('priorityChanged', { domainId, rank });
   }
 
+  function initNotes() {
+    const el = document.getElementById('assessment-notes');
+    if (!el) return;
+    if (state.notes) el.innerHTML = state.notes;
+    el.addEventListener('input', () => {
+      setNotes(el.innerHTML);
+    });
+  }
+
+  function setNotes(text) {
+    state.notes = text;
+    Storage.save(state);
+  }
+
   function recalculate() {
     const scores = Scoring.computeAllScores(specData, state.responses, state.config);
     Poster.update(scores, state);
     Assess.updateScores(scores);
+    Charts.render(scores);
   }
 
   function getState() { return state; }
@@ -185,5 +205,5 @@ const App = (() => {
 
   document.addEventListener('DOMContentLoaded', init);
 
-  return { setResponse, setConfig, setPriority, getState, getSpecData, setState, on, recalculate, getDefault };
+  return { setResponse, setConfig, setPriority, setNotes, getState, getSpecData, setState, on, recalculate, getDefault };
 })();

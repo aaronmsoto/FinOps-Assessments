@@ -42,7 +42,8 @@ const Config = (() => {
 
         for (const action of cap.actions) {
           const currentWeight = Scoring.getEffectiveWeight(action, state.config);
-          html += `<div class="config-action-row">`;
+          const dimmed = currentWeight === 0 ? ' dimmed' : '';
+          html += `<div class="config-action-row${dimmed}">`;
           html += `<span class="config-action-name" title="${esc(action.description || '')}">${esc(action.title)}</span>`;
           html += `<span class="config-action-weight">`;
           html += `<input type="number" data-weight-action="${action.id}" value="${currentWeight}" min="0" max="10" step="0.1">`;
@@ -64,9 +65,29 @@ const Config = (() => {
     html += `<div class="config-actions">`;
     html += `<button class="config-btn-action" id="config-export">Export JSON</button>`;
     html += `<button class="config-btn-action" id="config-import">Import JSON</button>`;
+    html += `<button class="config-btn-action" id="config-save-html">Save As Read-Only HTML</button>`;
     html += `<button class="config-btn-action danger" id="config-reset">Reset All</button>`;
     html += `</div>`;
     html += `</div>`;
+
+    // Maturity Thresholds
+    const thresholds = (state.config.thresholds && state.config.thresholds.length === 4)
+      ? state.config.thresholds : Scoring.DEFAULT_THRESHOLDS;
+    const thresholdLabels = ['Run', 'Walk', 'Crawl', 'Pre-crawl'];
+    html += `<div class="config-section">`;
+    html += `<h3>Maturity Thresholds</h3>`;
+    html += `<div class="config-thresholds">`;
+    thresholds.forEach((t, i) => {
+      html += `<div class="config-threshold-row">`;
+      html += `<span class="threshold-label">${thresholdLabels[i]}</span>`;
+      html += `<span class="threshold-inputs">`;
+      html += `<label>&ge;</label>`;
+      html += `<input type="number" class="threshold-min" data-threshold-idx="${i}" value="${t.min}" min="0" max="10" step="0.5">`;
+      html += `<input type="color" class="threshold-color" data-threshold-idx="${i}" value="${t.color}">`;
+      html += `</span>`;
+      html += `</div>`;
+    });
+    html += `</div></div>`;
 
     // Diagnostics
     const diagOn = state.config.diagnostics || false;
@@ -138,6 +159,29 @@ const Config = (() => {
       if (confirm('Reset all responses, configuration, and priorities? This cannot be undone.')) {
         App.setState({ responses: {}, config: {}, priorities: {} });
       }
+    });
+
+    // Threshold inputs
+    document.querySelectorAll('.threshold-min, .threshold-color').forEach(input => {
+      input.addEventListener('change', () => {
+        const thresholds = [];
+        for (let i = 0; i < 4; i++) {
+          const minEl = document.querySelector(`.threshold-min[data-threshold-idx="${i}"]`);
+          const colorEl = document.querySelector(`.threshold-color[data-threshold-idx="${i}"]`);
+          thresholds.push({
+            min: parseFloat(minEl.value) || 0,
+            color: colorEl.value
+          });
+        }
+        // Sort descending by min
+        thresholds.sort((a, b) => b.min - a.min);
+        App.setConfig('thresholds', thresholds);
+      });
+    });
+
+    // Save As HTML
+    document.getElementById('config-save-html').addEventListener('click', () => {
+      Storage.saveAsHTML();
     });
 
     // Diagnostics toggle

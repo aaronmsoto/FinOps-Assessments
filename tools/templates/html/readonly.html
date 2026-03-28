@@ -1,17 +1,185 @@
-<!-- Read-only template — Phase 2 stub -->
-<!-- This template will be bundled into the main assessment file -->
-<!-- and used by the Save As HTML feature to produce a frozen, non-editable snapshot -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Assessment Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'IBM Plex Sans', sans-serif; color: rgba(0,0,0,0.85); background: #fafafa; }
+    .hidden { display: none !important; }
+
+    header { background: #0080AF; color: #fff; padding: 12px 24px; text-align: center; }
+    header h1 { font-size: 20px; font-weight: 600; }
+    header p { font-size: 13px; opacity: 0.85; }
+
+    nav { display: flex; justify-content: center; gap: 4px; margin-top: 8px; }
+    .tab-btn { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 6px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px;
+      background: transparent; color: #fff; cursor: pointer; }
+    .tab-btn.active { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
+
+    main { padding: 16px; max-width: 1200px; margin: 0 auto; }
+
+    /* Poster styles (simplified) */
+    .poster-overall { text-align: center; margin-bottom: 12px; }
+    .poster-overall-label { font-size: 14px; color: rgba(0,0,0,0.5); }
+    .poster-overall-value { font-size: 28px; font-weight: 700; margin-left: 10px; }
+    .poster-outer { background: #0080AF; border-radius: 0 0 20px 20px; padding: 4px; }
+    .poster-inner { background: #fff; border-radius: 16px; padding: 12px; }
+    .poster-pillars { display: flex; gap: 4px; margin-bottom: 4px; }
+    .poster-pillars > .domain-card { flex: 1; }
+    .domain-card { background: #CCF4E9; border-radius: 12px; padding: 8px; }
+    .domain-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .domain-title-text { flex: 1; }
+    .domain-score { font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.6); padding: 1px 6px; border-radius: 4px; }
+    .priority-badge { font-size: 11px; font-weight: 600; color: #0080AF; background: rgba(255,255,255,0.7); padding: 1px 5px; border-radius: 3px; }
+    .cap-row { background: #fff; border-radius: 6px; padding: 6px 8px; margin: 2px 0; display: flex; align-items: center; position: relative; }
+    .cap-name { font-size: 12px; font-weight: 500; flex: 1; position: relative; z-index: 1; }
+    .cap-score { font-size: 12px; font-weight: 600; position: relative; z-index: 1; }
+    .cap-bar { position: absolute; bottom: 0; left: 0; height: 4px; border-radius: 0 0 6px 6px; }
+    .poster-foundation .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    .poster-pillars .cap-grid { display: flex; flex-direction: column; gap: 2px; }
+
+    /* Details tab */
+    .details-domain { margin-bottom: 20px; }
+    .details-domain h2 { font-size: 16px; color: #0080AF; border-bottom: 2px solid #0080AF; padding-bottom: 4px; margin-bottom: 8px; }
+    .details-cap { background: #f8f9fa; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
+    .details-cap h3 { font-size: 14px; margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .details-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .details-table th { text-align: left; padding: 4px 8px; border-bottom: 1px solid #ddd; color: rgba(0,0,0,0.5); }
+    .details-table td { padding: 4px 8px; border-bottom: 1px solid #f0f0f0; }
+
+    footer { text-align: center; padding: 12px; font-size: 11px; color: rgba(0,0,0,0.4); border-top: 1px solid #e0e0e0; margin-top: 24px; }
+    footer a { color: rgba(0,0,0,0.5); text-decoration: none; }
+
+    @media print {
+      nav, .tab-btn { display: none !important; }
+      header { background: none !important; color: #000; border-bottom: 2px solid #0080AF; }
+    }
+  </style>
 </head>
 <body>
-  <p>Read-only template — Phase 2</p>
+  <header>
+    <h1 id="ro-title">Assessment Report</h1>
+    <p id="ro-subtitle"></p>
+    <nav>
+      <button class="tab-btn active" onclick="showTab('results')">Results</button>
+      <button class="tab-btn" onclick="showTab('details')">Details</button>
+    </nav>
+  </header>
+  <main>
+    <div id="tab-results"></div>
+    <div id="tab-details" class="hidden"></div>
+  </main>
+  <footer>
+    <p id="ro-footer">
+      Based on <a href="https://github.com/FinOpsPP/Framework-Assessment/">FinOps++ Framework Assessment</a> and
+      <a href="https://www.finops.org/framework/">FinOps Framework</a> by
+      <a href="https://www.finops.org/">FinOps Foundation</a>
+    </p>
+  </footer>
+
   <script id="assessment-state" type="application/json">
   /* STATE_PLACEHOLDER */
+  </script>
+
+  <script>
+    function showTab(name) {
+      document.getElementById('tab-results').classList.toggle('hidden', name !== 'results');
+      document.getElementById('tab-details').classList.toggle('hidden', name !== 'details');
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    (function() {
+      const el = document.getElementById('assessment-state');
+      let data;
+      try { data = JSON.parse(el.textContent); } catch(e) { document.body.innerHTML = '<p>Error loading assessment data.</p>'; return; }
+
+      const { config, scores, priorities, specData } = data;
+      const FOUNDATION = ['manage'];
+      const PILLAR_ORDER = ['understand', 'quantify', 'optimize'];
+
+      // Title
+      document.getElementById('ro-title').textContent = config.title || 'Assessment Report';
+      document.getElementById('ro-subtitle').textContent = config.subtitle || '';
+      document.title = config.title || 'Assessment Report';
+      document.getElementById('ro-footer').insertAdjacentHTML('beforeend',
+        '<br>Generated ' + new Date(data.savedAt).toLocaleDateString());
+
+      // Color helper
+      const thresholds = (config.thresholds && config.thresholds.length === 4) ? config.thresholds :
+        [{min:8.0,color:'#00C693'},{min:5.0,color:'#009664'},{min:2.0,color:'#006432'},{min:0,color:'#646464'}];
+      function scoreColor(s) {
+        if (s === null || s === undefined) return '#c8c8c8';
+        var r = Math.round(s * 10) / 10;
+        for (const t of thresholds) { if (r >= t.min) return t.color; }
+        return '#646464';
+      }
+      function fmt(s) { return s === null || s === undefined ? '\u2014' : s.toFixed(1); }
+
+      // Render Results poster
+      const isFoundation = d => FOUNDATION.some(kw => d.title.toLowerCase().includes(kw));
+      const pillarSort = d => { const i = PILLAR_ORDER.findIndex(kw => d.title.toLowerCase().includes(kw)); return i >= 0 ? i : 99; };
+      const pillars = scores.domains.filter(d => !isFoundation(d)).sort((a,b) => pillarSort(a) - pillarSort(b));
+      const foundation = scores.domains.filter(d => isFoundation(d));
+
+      let rh = '<div class="poster-overall"><span class="poster-overall-label">Overall Score</span>';
+      rh += '<span class="poster-overall-value" style="color:' + scoreColor(scores.overall) + '">' + fmt(scores.overall) + '</span></div>';
+      rh += '<div class="poster-outer"><div class="poster-inner">';
+      rh += '<div class="poster-pillars">';
+      pillars.forEach(d => { rh += renderDomainCard(d); });
+      rh += '</div>';
+      foundation.forEach(d => { rh += '<div class="poster-foundation">' + renderDomainCard(d, true) + '</div>'; });
+      rh += '</div></div>';
+      document.getElementById('tab-results').innerHTML = rh;
+
+      function renderDomainCard(d, isF) {
+        const p = priorities[d.id];
+        let h = '<div class="domain-card"><div class="domain-title">';
+        if (p) h += '<span class="priority-badge">#' + p + '</span>';
+        h += '<span class="domain-title-text">' + d.title + '</span>';
+        h += '<span class="domain-score" style="color:' + scoreColor(d.score) + '">' + fmt(d.score) + '</span>';
+        h += '</div><div class="cap-grid">';
+        d.capabilities.forEach(c => {
+          if (c.hidden) return;
+          h += '<div class="cap-row">';
+          if (c.score !== null) h += '<div class="cap-bar" style="width:' + (c.score*10) + '%;background:' + scoreColor(c.score) + '"></div>';
+          h += '<span class="cap-name">' + c.title + '</span>';
+          h += '<span class="cap-score" style="color:' + scoreColor(c.score) + '">' + fmt(c.score) + '</span>';
+          h += '</div>';
+        });
+        h += '</div></div>';
+        return h;
+      }
+
+      // Notes
+      if (data.notes) {
+        rh += '<div style="max-width:1200px;margin:24px auto 0;padding:0 16px;font-size:13px;line-height:1.6;color:rgba(0,0,0,0.8)">';
+        rh += data.notes;
+        rh += '</div>';
+      }
+
+      // Render Details tab
+      let dh = '';
+      scores.domains.forEach(d => {
+        dh += '<div class="details-domain"><h2>' + d.title + '</h2>';
+        d.capabilities.forEach(c => {
+          if (c.hidden) return;
+          dh += '<div class="details-cap"><h3><span>' + c.title + '</span><span style="color:' + scoreColor(c.score) + '">' + fmt(c.score) + '</span></h3>';
+          dh += '<table class="details-table"><thead><tr><th>Action</th><th>Score</th></tr></thead><tbody>';
+          c.actions.forEach(a => {
+            if (a.weight <= 0) return;
+            dh += '<tr><td>' + a.title + '</td><td style="color:' + scoreColor(a.score) + '">' + fmt(a.score) + '</td></tr>';
+          });
+          dh += '</tbody></table></div>';
+        });
+        dh += '</div>';
+      });
+      document.getElementById('tab-details').innerHTML = dh;
+    })();
   </script>
 </body>
 </html>

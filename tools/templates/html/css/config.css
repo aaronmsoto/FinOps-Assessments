@@ -202,6 +202,14 @@ details[open] > .config-cap-summary::before {
   border-bottom: none;
 }
 
+.config-action-row.dimmed {
+  opacity: 0.4;
+}
+
+.config-action-row.dimmed .config-action-name {
+  text-decoration: line-through;
+}
+
 .config-action-name {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.7);
@@ -234,6 +242,56 @@ details[open] > .config-cap-summary::before {
   font-size: 11px;
   min-width: 24px;
   text-align: right;
+}
+
+/* Maturity Thresholds */
+.config-thresholds {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.config-threshold-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.threshold-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+  width: 60px;
+}
+
+.threshold-inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.threshold-inputs label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.threshold-min {
+  width: 55px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-align: right;
+}
+
+.threshold-color {
+  width: 32px;
+  height: 26px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 1px;
+  cursor: pointer;
 }
 
 /* Data management buttons */

@@ -19,14 +19,15 @@ const Storage = (() => {
         return {
           responses: saved.responses || {},
           config: saved.config || {},
-          priorities: saved.priorities || {}
+          priorities: saved.priorities || {},
+          notes: saved.notes || ''
         };
       }
     } catch (e) {
       console.warn('Failed to load saved state from localStorage — starting fresh:', e);
       try { localStorage.removeItem(STORAGE_KEY); } catch (_) { /* ignore */ }
     }
-    return { responses: {}, config: {}, priorities: {} };
+    return { responses: {}, config: {}, priorities: {}, notes: '' };
   }
 
   function exportJSON() {
@@ -55,7 +56,8 @@ const Storage = (() => {
           const newState = {
             responses: data.responses || {},
             config: data.config || {},
-            priorities: data.priorities || {}
+            priorities: data.priorities || {},
+            notes: data.notes || ''
           };
           App.setState(newState);
         } catch (err) {
@@ -85,5 +87,33 @@ const Storage = (() => {
     return `${title} - ${date}.${ext}`;
   }
 
-  return { save, load, exportJSON, importJSON, downloadBlob, generateFilename };
+  function saveAsHTML() {
+    const templateEl = document.getElementById('readonly-template');
+    if (!templateEl) {
+      alert('Read-only template not available in this build.');
+      return;
+    }
+
+    const state = App.getState();
+    const specData = App.getSpecData();
+    const scores = Scoring.computeAllScores(specData, state.responses, state.config);
+
+    const stateData = {
+      savedAt: new Date().toISOString(),
+      config: state.config,
+      responses: state.responses,
+      priorities: state.priorities,
+      notes: state.notes || '',
+      scores: scores,
+      specData: specData
+    };
+
+    var endTag = '<' + '/script>';
+    let html = templateEl.textContent.split('<\\/script>').join(endTag);
+    html = html.replace('/* STATE_PLACEHOLDER */', JSON.stringify(stateData, null, 2));
+    const blob = new Blob([html], { type: 'text/html' });
+    downloadBlob(blob, generateFilename('html'));
+  }
+
+  return { save, load, exportJSON, importJSON, saveAsHTML, downloadBlob, generateFilename };
 })();

@@ -8,37 +8,10 @@
   font-family: 'IBM Plex Sans', sans-serif;
 }
 
-/* Domain tabs row */
-.poster-tabs {
-  display: flex;
-  gap: 3px;
-  padding: 0 14px;
-  position: relative;
-  z-index: 2;
-}
-
-.poster-tab {
-  background: #00C693;
-  border-radius: 8px 8px 0 0;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-style: italic;
-  font-weight: 500;
-  line-height: 1.2;
-  color: rgba(0, 0, 0, 0.85);
-  flex: 1;
-  text-align: center;
-  transition: background 0.2s;
-}
-
-.poster-tab:hover {
-  background: #66ddbe;
-}
-
 /* Outer blue container */
 .poster-outer {
   background: #0080AF;
-  border-radius: 0 0 20px 20px;
+  border-radius: 20px;
   padding: 4px;
 }
 
@@ -131,6 +104,15 @@
   padding: 1px 6px;
   border-radius: 4px;
   white-space: nowrap;
+}
+
+.domain-maturity {
+  display: inline-flex;
+  align-items: center;
+}
+
+.domain-maturity svg {
+  vertical-align: middle;
 }
 
 .domain-priority-badge {
@@ -250,6 +232,15 @@
   color: rgba(0, 0, 0, 0.5);
 }
 
+.poster-overall-maturity {
+  display: inline-flex;
+  align-items: center;
+}
+
+.poster-overall-maturity svg {
+  vertical-align: middle;
+}
+
 .poster-overall-value {
   font-size: 28px;
   font-weight: 700;
@@ -258,6 +249,82 @@
 
 .poster-overall-value.unscored {
   color: rgb(200, 200, 200);
+}
+
+/* Charts section — below poster */
+
+.chart-heading {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0080AF;
+  margin: 20px 0 8px;
+}
+
+.chart-heading:first-child {
+  margin-top: 0;
+}
+
+.charts-section {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding: 0 16px;
+}
+
+.charts-section canvas {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  display: block;
+}
+
+#chart-domains {
+  height: 260px;
+}
+
+#chart-distribution {
+  height: 220px;
+}
+
+/* chart-capabilities height set dynamically by JS */
+
+/* Notes section */
+.notes-section {
+  max-width: 1200px;
+  margin: 24px auto 0;
+  padding: 0 16px;
+}
+
+.notes-content {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.8);
+  min-height: 24px;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.notes-content:hover {
+  border-color: #e0e0e0;
+  background: #fafafa;
+}
+
+.notes-content:focus {
+  border-color: #0080AF;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(0, 128, 175, 0.1);
+}
+
+.notes-content:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(0, 0, 0, 0.25);
+  font-style: italic;
+  pointer-events: none;
 }
 
 /* Print-only priority text */

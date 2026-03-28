@@ -27,10 +27,21 @@
   }
 
   #app-header {
+    position: static !important;
     background: none !important;
     box-shadow: none !important;
     border-bottom: 2px solid #0080AF;
     padding: 8px 0;
+    color: #000 !important;
+  }
+
+  .header-titles h1 {
+    color: #0080AF !important;
+  }
+
+  .header-titles p {
+    color: rgba(0, 0, 0, 0.6) !important;
+    opacity: 1 !important;
   }
 
   .poster {
@@ -61,6 +72,21 @@
     display: inline !important;
     color: rgba(0, 0, 0, 0.5) !important;
     text-decoration: none !important;
+  }
+
+  /* Notes section in print */
+  .notes-content {
+    border: none !important;
+    padding: 8px 0 !important;
+    box-shadow: none !important;
+  }
+
+  .notes-content:empty {
+    display: none !important;
+  }
+
+  .notes-content[contenteditable] {
+    -webkit-user-modify: read-only !important;
   }
 
   /* Domain priority as static text */

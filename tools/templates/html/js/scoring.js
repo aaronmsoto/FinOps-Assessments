@@ -1,12 +1,32 @@
 /* Scoring Engine — replicates finopspp Python scoring logic */
 
 const Scoring = (() => {
+  const DEFAULT_THRESHOLDS = [
+    { min: 8.0, color: '#00C693' },
+    { min: 5.0, color: '#009664' },
+    { min: 2.0, color: '#006432' },
+    { min: 0,   color: '#646464' }
+  ];
+
+  function getThresholds() {
+    try {
+      const state = App.getState();
+      if (state && state.config && Array.isArray(state.config.thresholds) && state.config.thresholds.length === 4) {
+        // Ensure descending sort so >= comparison works correctly
+        return state.config.thresholds.slice().sort((a, b) => b.min - a.min);
+      }
+    } catch (e) { /* App not initialized yet */ }
+    return DEFAULT_THRESHOLDS;
+  }
+
   function getScoreColor(score) {
-    if (score === null || score === undefined) return 'rgb(200, 200, 200)';
-    if (score >= 7.5) return 'rgb(0, 198, 147)';
-    if (score >= 5.0) return 'rgb(0, 150, 100)';
-    if (score >= 2.5) return 'rgb(0, 100, 50)';
-    return 'rgb(100, 100, 100)';
+    if (score === null || score === undefined) return '#c8c8c8';
+    const rounded = Math.round(score * 10) / 10;
+    const thresholds = getThresholds();
+    for (const t of thresholds) {
+      if (rounded >= t.min) return t.color;
+    }
+    return thresholds[thresholds.length - 1].color;
   }
 
   // All 7 score types from the FinOps++ spec:
@@ -201,6 +221,8 @@ const Scoring = (() => {
   }
 
   return {
+    DEFAULT_THRESHOLDS,
+    getThresholds,
     getScoreColor,
     computeActionScore,
     parseBucketItems,

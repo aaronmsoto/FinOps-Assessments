@@ -31,14 +31,8 @@ const Poster = (() => {
     // Overall score — centered above the poster
     html += '<div class="poster-overall">';
     html += '<span class="poster-overall-label">Overall Score</span>';
+    html += '<span class="poster-overall-maturity" id="overall-maturity-icon"></span>';
     html += '<span class="poster-overall-value unscored" id="overall-score-value">\u2014</span>';
-    html += '</div>';
-
-    // Domain tabs row
-    html += '<div class="poster-tabs">';
-    for (const domain of specData.domains) {
-      html += `<span class="poster-tab">${esc(domain.title)}</span>`;
-    }
     html += '</div>';
 
     // Outer blue container
@@ -96,6 +90,7 @@ const Poster = (() => {
       html += `<span class="domain-priority-badge hidden" data-domain-priority-badge="${domain.id}"></span>`;
     }
     html += `<span class="domain-title-text">${esc(domain.title)}</span>`;
+    html += `<span class="domain-maturity" data-domain-maturity="${domain.id}"></span>`;
     html += `<span class="domain-score" data-domain-score="${domain.id}">\u2014</span>`;
     html += `</h2>`;
 
@@ -122,6 +117,11 @@ const Poster = (() => {
       if (el) {
         el.textContent = Scoring.formatScore(domain.score);
         el.style.color = domain.score !== null ? Scoring.getScoreColor(domain.score) : '';
+      }
+
+      const matEl = document.querySelector(`[data-domain-maturity="${domain.id}"]`);
+      if (matEl) {
+        matEl.innerHTML = Utils.getMaturitySvg(domain.score);
       }
 
       for (const cap of domain.capabilities) {
@@ -158,6 +158,11 @@ const Poster = (() => {
         overallEl.classList.add('unscored');
         overallEl.style.color = '';
       }
+    }
+
+    const overallIcon = document.getElementById('overall-maturity-icon');
+    if (overallIcon) {
+      overallIcon.innerHTML = Utils.getMaturitySvg(scores.overall);
     }
   }
 

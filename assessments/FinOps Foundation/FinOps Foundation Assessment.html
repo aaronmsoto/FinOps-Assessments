@@ -17,7 +17,7 @@
     #app { min-height: 100vh; display: flex; flex-direction: column; }
 
     /* Header */
-    #app-header { background: #0080AF; color: #fff; padding: 12px 24px; }
+    #app-header { background: #0080AF; color: #fff; padding: 12px 24px; position: sticky; top: 0; z-index: 500; }
     .header-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
     .header-titles h1 { font-size: 20px; font-weight: 600; line-height: 1.3; }
     .header-titles p { font-size: 13px; font-weight: 300; opacity: 0.85; }
@@ -595,6 +595,14 @@ details[open] > .config-cap-summary::before {
   border-bottom: none;
 }
 
+.config-action-row.dimmed {
+  opacity: 0.4;
+}
+
+.config-action-row.dimmed .config-action-name {
+  text-decoration: line-through;
+}
+
 .config-action-name {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.7);
@@ -627,6 +635,56 @@ details[open] > .config-cap-summary::before {
   font-size: 11px;
   min-width: 24px;
   text-align: right;
+}
+
+/* Maturity Thresholds */
+.config-thresholds {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.config-threshold-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.threshold-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+  width: 60px;
+}
+
+.threshold-inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.threshold-inputs label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.threshold-min {
+  width: 55px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-align: right;
+}
+
+.threshold-color {
+  width: 32px;
+  height: 26px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 1px;
+  cursor: pointer;
 }
 
 /* Data management buttons */
@@ -674,37 +732,10 @@ details[open] > .config-cap-summary::before {
   font-family: 'IBM Plex Sans', sans-serif;
 }
 
-/* Domain tabs row */
-.poster-tabs {
-  display: flex;
-  gap: 3px;
-  padding: 0 14px;
-  position: relative;
-  z-index: 2;
-}
-
-.poster-tab {
-  background: #00C693;
-  border-radius: 8px 8px 0 0;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-style: italic;
-  font-weight: 500;
-  line-height: 1.2;
-  color: rgba(0, 0, 0, 0.85);
-  flex: 1;
-  text-align: center;
-  transition: background 0.2s;
-}
-
-.poster-tab:hover {
-  background: #66ddbe;
-}
-
 /* Outer blue container */
 .poster-outer {
   background: #0080AF;
-  border-radius: 0 0 20px 20px;
+  border-radius: 20px;
   padding: 4px;
 }
 
@@ -781,17 +812,12 @@ details[open] > .config-cap-summary::before {
   margin: 0 0 6px;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 4px;
+  gap: 6px;
   line-height: 1.3;
 }
 
-.domain-meta {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+.domain-title-text {
+  flex: 1;
 }
 
 .domain-score {
@@ -802,6 +828,15 @@ details[open] > .config-cap-summary::before {
   padding: 1px 6px;
   border-radius: 4px;
   white-space: nowrap;
+}
+
+.domain-maturity {
+  display: inline-flex;
+  align-items: center;
+}
+
+.domain-maturity svg {
+  vertical-align: middle;
 }
 
 .domain-priority-badge {
@@ -921,6 +956,15 @@ details[open] > .config-cap-summary::before {
   color: rgba(0, 0, 0, 0.5);
 }
 
+.poster-overall-maturity {
+  display: inline-flex;
+  align-items: center;
+}
+
+.poster-overall-maturity svg {
+  vertical-align: middle;
+}
+
 .poster-overall-value {
   font-size: 28px;
   font-weight: 700;
@@ -929,6 +973,82 @@ details[open] > .config-cap-summary::before {
 
 .poster-overall-value.unscored {
   color: rgb(200, 200, 200);
+}
+
+/* Charts section — below poster */
+
+.chart-heading {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0080AF;
+  margin: 20px 0 8px;
+}
+
+.chart-heading:first-child {
+  margin-top: 0;
+}
+
+.charts-section {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding: 0 16px;
+}
+
+.charts-section canvas {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  display: block;
+}
+
+#chart-domains {
+  height: 260px;
+}
+
+#chart-distribution {
+  height: 220px;
+}
+
+/* chart-capabilities height set dynamically by JS */
+
+/* Notes section */
+.notes-section {
+  max-width: 1200px;
+  margin: 24px auto 0;
+  padding: 0 16px;
+}
+
+.notes-content {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.8);
+  min-height: 24px;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.notes-content:hover {
+  border-color: #e0e0e0;
+  background: #fafafa;
+}
+
+.notes-content:focus {
+  border-color: #0080AF;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(0, 128, 175, 0.1);
+}
+
+.notes-content:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(0, 0, 0, 0.25);
+  font-style: italic;
+  pointer-events: none;
 }
 
 /* Print-only priority text */
@@ -975,10 +1095,21 @@ details[open] > .config-cap-summary::before {
   }
 
   #app-header {
+    position: static !important;
     background: none !important;
     box-shadow: none !important;
     border-bottom: 2px solid #0080AF;
     padding: 8px 0;
+    color: #000 !important;
+  }
+
+  .header-titles h1 {
+    color: #0080AF !important;
+  }
+
+  .header-titles p {
+    color: rgba(0, 0, 0, 0.6) !important;
+    opacity: 1 !important;
   }
 
   .poster {
@@ -1009,6 +1140,21 @@ details[open] > .config-cap-summary::before {
     display: inline !important;
     color: rgba(0, 0, 0, 0.5) !important;
     text-decoration: none !important;
+  }
+
+  /* Notes section in print */
+  .notes-content {
+    border: none !important;
+    padding: 8px 0 !important;
+    box-shadow: none !important;
+  }
+
+  .notes-content:empty {
+    display: none !important;
+  }
+
+  .notes-content[contenteditable] {
+    -webkit-user-modify: read-only !important;
   }
 
   /* Domain priority as static text */
@@ -1049,6 +1195,17 @@ details[open] > .config-cap-summary::before {
     <main id="app-main">
       <section id="tab-results" class="tab-content active">
         <div id="poster-container"></div>
+        <div class="charts-section">
+          <h3 class="chart-heading">Domain Maturity</h3>
+          <canvas id="chart-domains"></canvas>
+          <h3 class="chart-heading">Capability Maturity</h3>
+          <canvas id="chart-capabilities"></canvas>
+          <h3 class="chart-heading">Action Score Distribution</h3>
+          <canvas id="chart-distribution"></canvas>
+        </div>
+        <div class="notes-section">
+          <div id="assessment-notes" class="notes-content" contenteditable="true" data-placeholder="Click to add notes, commentary, or recommendations..."></div>
+        </div>
       </section>
       <section id="tab-assess" class="tab-content hidden">
         <div id="assess-container"></div>
@@ -1078,7 +1235,7 @@ details[open] > .config-cap-summary::before {
 
   <script id="spec-data" type="application/json">
   {
-  "generatedAt": "2026-03-28T06:49:53.857821+00:00",
+  "generatedAt": "2026-03-28T08:48:01.929837+00:00",
   "generator": "finopspp",
   "profile": {
     "title": "FinOps Foundation"
@@ -1091,7 +1248,7 @@ details[open] > .config-cap-summary::before {
       "capabilities": [
         {
           "id": 6,
-          "title": "Cloud Policy & Governance",
+          "title": "Governance, Policy & Risk",
           "serialNumber": "006",
           "actions": [
             {
@@ -1576,7 +1733,7 @@ details[open] > .config-cap-summary::before {
         },
         {
           "id": 12,
-          "title": "FinOps Tools & Services",
+          "title": "Automation, Tools & Services",
           "serialNumber": "012",
           "actions": [
             {
@@ -1917,50 +2074,37 @@ details[open] > .config-cap-summary::before {
           ]
         },
         {
-          "id": 16,
-          "title": "Onboarding Workloads",
-          "serialNumber": "016",
+          "id": 23,
+          "title": "Executive Strategy Alignment",
+          "serialNumber": "023",
           "actions": [
             {
-              "id": 118,
-              "title": "Create Workload Selection Criteria",
-              "description": "Create selection criteria and a value-vs-effort matrix.",
-              "serialNumber": "118",
-              "weight": 0.0,
-              "scoreType": "calculation",
-              "scoring": [
-                {
-                  "score": 0,
-                  "condition": null
-                }
-              ],
-              "formula": null,
-              "references": [],
-              "supplementalGuidance": []
-            },
-            {
-              "id": 119,
-              "title": "Define Success Criteria & Scope",
-              "description": "Define success criteria, in/out of scope, constraints, timelines.",
-              "serialNumber": "119",
-              "weight": 0.0,
-              "scoreType": "calculation",
-              "scoring": [
-                {
-                  "score": 0,
-                  "condition": null
-                }
-              ],
-              "formula": null,
-              "references": [],
-              "supplementalGuidance": []
-            },
-            {
-              "id": 120,
-              "title": "Enforce Tagging at Onboarding",
-              "description": "Enforce tagging, compliance, and automation standards at onboarding.",
-              "serialNumber": "120",
+              "id": 136,
+              "title": "Establish Executive Sponsorship",
+              "description": "Identify and formalize an executive sponsor for the FinOps practice.",
+              "serialNumber": "136",
               "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No executive sponsor identified"
+                },
+                {
+                  "score": 10,
+                  "condition": "Executive sponsor formally identified and actively engaged"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 137,
+              "title": "Define Decision Rights & Guardrails",
+              "description": "Document approval authority, spend guardrails, and ownership for technology investments.",
+              "serialNumber": "137",
+              "weight": 0.0,
               "scoreType": "bucket",
               "scoring": [
                 {
@@ -1980,58 +2124,65 @@ details[open] > .config-cap-summary::before {
                   "condition": "3 items completed"
                 }
               ],
-              "formula": "* Process defined for new accounts and resources deployed\n* Train teams on process\n* Automate process\n\n10*Ceil(x/3)",
+              "formula": "* Document decision rights and approval authority for technology spend\n* Define and publish spend guardrails with named owners\n* Establish escalation path for spend exceptions\n\n10*Ceil(x/3)",
               "references": [],
               "supplementalGuidance": []
             },
             {
-              "id": 121,
-              "title": "Align Timelines with Budgets",
-              "description": "Align project timelines with budgets, dependencies, and releases.",
-              "serialNumber": "121",
+              "id": 138,
+              "title": "Build Multi-Year Investment Forecast",
+              "description": "Forecast technology vendor commitments across categories over multiple years.",
+              "serialNumber": "138",
               "weight": 0.0,
-              "scoreType": "calculation",
+              "scoreType": "bucket",
               "scoring": [
                 {
                   "score": 0,
-                  "condition": null
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 7,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "3 items completed"
                 }
               ],
-              "formula": null,
+              "formula": "* Inventory vendor commitments across technology categories (cloud, SaaS, data center, AI)\n* Create a multi-year forecast incorporating renewal timelines and growth projections\n* Incorporate transition and modernization costs into the investment plan\n\n10*Ceil(x/3)",
               "references": [],
               "supplementalGuidance": []
             },
             {
-              "id": 122,
-              "title": "Start with Lower Environments",
-              "description": "Start with lower envs; have a rollback plan before production cutover.",
-              "serialNumber": "122",
+              "id": 139,
+              "title": "Establish Decision Support Cadence",
+              "description": "Set regular review cadence connecting technology spend to business outcomes.",
+              "serialNumber": "139",
               "weight": 0.0,
-              "scoreType": "calculation",
+              "scoreType": "bucket",
               "scoring": [
                 {
                   "score": 0,
-                  "condition": null
-                }
-              ],
-              "formula": null,
-              "references": [],
-              "supplementalGuidance": []
-            },
-            {
-              "id": 123,
-              "title": "Review Outcomes & Adjust Patterns",
-              "description": "Review post-onboard outcomes vs estimates and KPIs; adjust patterns.",
-              "serialNumber": "123",
-              "weight": 0.0,
-              "scoreType": "calculation",
-              "scoring": [
+                  "condition": "No items completed"
+                },
                 {
-                  "score": 0,
-                  "condition": null
+                  "score": 4,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 7,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "3 items completed"
                 }
               ],
-              "formula": null,
+              "formula": "* Define a regular review cadence for technology investment decisions\n* Deliver cost and outcome comparisons for competing initiatives at reviews\n* Track and report action follow-through from investment decisions\n\n10*Ceil(x/3)",
               "references": [],
               "supplementalGuidance": []
             }
@@ -2046,7 +2197,7 @@ details[open] > .config-cap-summary::before {
       "capabilities": [
         {
           "id": 3,
-          "title": "Architecting for Cloud",
+          "title": "Architecting & Workload Placement",
           "serialNumber": "003",
           "actions": [
             {
@@ -2178,12 +2329,126 @@ details[open] > .config-cap-summary::before {
               "formula": null,
               "references": [],
               "supplementalGuidance": []
+            },
+            {
+              "id": 118,
+              "title": "Create Workload Selection Criteria",
+              "description": "Create selection criteria and a value-vs-effort matrix.",
+              "serialNumber": "118",
+              "weight": 0.0,
+              "scoreType": "calculation",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 119,
+              "title": "Define Success Criteria & Scope",
+              "description": "Define success criteria, in/out of scope, constraints, timelines.",
+              "serialNumber": "119",
+              "weight": 0.0,
+              "scoreType": "calculation",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 120,
+              "title": "Enforce Tagging at Onboarding",
+              "description": "Enforce tagging, compliance, and automation standards at onboarding.",
+              "serialNumber": "120",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 7,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "3 items completed"
+                }
+              ],
+              "formula": "* Process defined for new accounts and resources deployed\n* Train teams on process\n* Automate process\n\n10*Ceil(x/3)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 121,
+              "title": "Align Timelines with Budgets",
+              "description": "Align project timelines with budgets, dependencies, and releases.",
+              "serialNumber": "121",
+              "weight": 0.0,
+              "scoreType": "calculation",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 122,
+              "title": "Start with Lower Environments",
+              "description": "Start with lower envs; have a rollback plan before production cutover.",
+              "serialNumber": "122",
+              "weight": 0.0,
+              "scoreType": "calculation",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 123,
+              "title": "Review Outcomes & Adjust Patterns",
+              "description": "Review post-onboard outcomes vs estimates and KPIs; adjust patterns.",
+              "serialNumber": "123",
+              "weight": 0.0,
+              "scoreType": "calculation",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
             }
           ]
         },
         {
           "id": 7,
-          "title": "Cloud Sustainability",
+          "title": "Sustainability",
           "serialNumber": "007",
           "actions": [
             {
@@ -2582,7 +2847,7 @@ details[open] > .config-cap-summary::before {
         },
         {
           "id": 22,
-          "title": "Workload Optimization",
+          "title": "Usage Optimization",
           "serialNumber": "022",
           "actions": [
             {
@@ -2750,7 +3015,7 @@ details[open] > .config-cap-summary::before {
       "capabilities": [
         {
           "id": 4,
-          "title": "Benchmarking",
+          "title": "KPIs & Benchmarking",
           "serialNumber": "004",
           "actions": [
             {
@@ -4564,7 +4829,30 @@ const Utils = (() => {
     return d.innerHTML;
   }
 
-  return { SCORE_TYPES, ALL_SCORE_TYPES, esc };
+  // Maturity SVG icons (from finops.org) — 20px inline versions
+  const MATURITY_SVGS = {
+    precrawl: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="32" fill="#192630" opacity="0.3"></circle><path d="M29 56L10 45.5293V24L29 34.4707V56Z" fill="#EEF0F1"></path><path d="M35 56L54 45.5293V24L35 34.4707V56Z" fill="#EEF0F1"></path><path d="M32.0003 8L14 18.8155L32.0003 29L50 18.8155L32.0003 8Z" fill="#EEF0F1"></path></svg>',
+    crawl: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="32" fill="#192630"></circle><path d="M29 56L10 45.5293V24L29 34.4707V56Z" fill="#00C693"></path><path d="M35 56L54 45.5293V24L35 34.4707V56Z" fill="#EEF0F1"></path><path d="M32.0003 8L14 18.8155L32.0003 29L50 18.8155L32.0003 8Z" fill="#EEF0F1"></path></svg>',
+    walk: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="32" fill="#192630"></circle><path d="M29 56L10 45.5293V24L29 34.4707V56Z" fill="#00C693"></path><path d="M35 56L54 45.5293V24L35 34.4707V56Z" fill="#00C693"></path><path d="M32.0003 8L14 18.8155L32.0003 29L50 18.8155L32.0003 8Z" fill="#EEF0F1"></path></svg>',
+    run: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="32" fill="#192630"></circle><path d="M29 56L10 45.5293V24L29 34.4707V56Z" fill="#00C693"></path><path d="M35 56L54 45.5293V24L35 34.4707V56Z" fill="#00C693"></path><path d="M32.0003 8L14 18.8155L32.0003 29L50 18.8155L32.0003 8Z" fill="#00C693"></path></svg>'
+  };
+
+  function getMaturityLevel(score) {
+    if (score === null || score === undefined) return null;
+    const rounded = Math.round(score * 10) / 10;
+    const thresholds = Scoring.getThresholds();
+    if (rounded >= thresholds[0].min) return 'run';
+    if (rounded >= thresholds[1].min) return 'walk';
+    if (rounded >= thresholds[2].min) return 'crawl';
+    return 'precrawl';
+  }
+
+  function getMaturitySvg(score) {
+    const level = getMaturityLevel(score);
+    return level ? MATURITY_SVGS[level] : '';
+  }
+
+  return { SCORE_TYPES, ALL_SCORE_TYPES, esc, MATURITY_SVGS, getMaturityLevel, getMaturitySvg };
 })();
 
 
@@ -4572,12 +4860,32 @@ const Utils = (() => {
 /* Scoring Engine — replicates finopspp Python scoring logic */
 
 const Scoring = (() => {
+  const DEFAULT_THRESHOLDS = [
+    { min: 8.0, color: '#00C693' },
+    { min: 5.0, color: '#009664' },
+    { min: 2.0, color: '#006432' },
+    { min: 0,   color: '#646464' }
+  ];
+
+  function getThresholds() {
+    try {
+      const state = App.getState();
+      if (state && state.config && Array.isArray(state.config.thresholds) && state.config.thresholds.length === 4) {
+        // Ensure descending sort so >= comparison works correctly
+        return state.config.thresholds.slice().sort((a, b) => b.min - a.min);
+      }
+    } catch (e) { /* App not initialized yet */ }
+    return DEFAULT_THRESHOLDS;
+  }
+
   function getScoreColor(score) {
-    if (score === null || score === undefined) return 'rgb(200, 200, 200)';
-    if (score >= 7.5) return 'rgb(0, 198, 147)';
-    if (score >= 5.0) return 'rgb(0, 150, 100)';
-    if (score >= 2.5) return 'rgb(0, 100, 50)';
-    return 'rgb(100, 100, 100)';
+    if (score === null || score === undefined) return '#c8c8c8';
+    const rounded = Math.round(score * 10) / 10;
+    const thresholds = getThresholds();
+    for (const t of thresholds) {
+      if (rounded >= t.min) return t.color;
+    }
+    return thresholds[thresholds.length - 1].color;
   }
 
   // All 7 score types from the FinOps++ spec:
@@ -4772,6 +5080,8 @@ const Scoring = (() => {
   }
 
   return {
+    DEFAULT_THRESHOLDS,
+    getThresholds,
     getScoreColor,
     computeActionScore,
     parseBucketItems,
@@ -4809,14 +5119,15 @@ const Storage = (() => {
         return {
           responses: saved.responses || {},
           config: saved.config || {},
-          priorities: saved.priorities || {}
+          priorities: saved.priorities || {},
+          notes: saved.notes || ''
         };
       }
     } catch (e) {
       console.warn('Failed to load saved state from localStorage — starting fresh:', e);
       try { localStorage.removeItem(STORAGE_KEY); } catch (_) { /* ignore */ }
     }
-    return { responses: {}, config: {}, priorities: {} };
+    return { responses: {}, config: {}, priorities: {}, notes: '' };
   }
 
   function exportJSON() {
@@ -4845,7 +5156,8 @@ const Storage = (() => {
           const newState = {
             responses: data.responses || {},
             config: data.config || {},
-            priorities: data.priorities || {}
+            priorities: data.priorities || {},
+            notes: data.notes || ''
           };
           App.setState(newState);
         } catch (err) {
@@ -4875,7 +5187,35 @@ const Storage = (() => {
     return `${title} - ${date}.${ext}`;
   }
 
-  return { save, load, exportJSON, importJSON, downloadBlob, generateFilename };
+  function saveAsHTML() {
+    const templateEl = document.getElementById('readonly-template');
+    if (!templateEl) {
+      alert('Read-only template not available in this build.');
+      return;
+    }
+
+    const state = App.getState();
+    const specData = App.getSpecData();
+    const scores = Scoring.computeAllScores(specData, state.responses, state.config);
+
+    const stateData = {
+      savedAt: new Date().toISOString(),
+      config: state.config,
+      responses: state.responses,
+      priorities: state.priorities,
+      notes: state.notes || '',
+      scores: scores,
+      specData: specData
+    };
+
+    var endTag = '<' + '/script>';
+    let html = templateEl.textContent.split('<\\/script>').join(endTag);
+    html = html.replace('/* STATE_PLACEHOLDER */', JSON.stringify(stateData, null, 2));
+    const blob = new Blob([html], { type: 'text/html' });
+    downloadBlob(blob, generateFilename('html'));
+  }
+
+  return { save, load, exportJSON, importJSON, saveAsHTML, downloadBlob, generateFilename };
 })();
 
 
@@ -4913,14 +5253,8 @@ const Poster = (() => {
     // Overall score — centered above the poster
     html += '<div class="poster-overall">';
     html += '<span class="poster-overall-label">Overall Score</span>';
+    html += '<span class="poster-overall-maturity" id="overall-maturity-icon"></span>';
     html += '<span class="poster-overall-value unscored" id="overall-score-value">\u2014</span>';
-    html += '</div>';
-
-    // Domain tabs row
-    html += '<div class="poster-tabs">';
-    for (const domain of specData.domains) {
-      html += `<span class="poster-tab">${esc(domain.title)}</span>`;
-    }
     html += '</div>';
 
     // Outer blue container
@@ -4971,15 +5305,15 @@ const Poster = (() => {
     let html = `<div class="domain-card${isFoundation ? ' foundation' : ''}" data-domain-id="${domain.id}">`;
 
     // Domain title row
-    html += `<h2 class="domain-title">${esc(domain.title)}`;
-    html += `<span class="domain-meta">`;
-    html += `<span class="domain-score" data-domain-score="${domain.id}">\u2014</span>`;
+    html += `<h2 class="domain-title">`;
     if (priority) {
       html += `<span class="domain-priority-badge" data-domain-priority-badge="${domain.id}">#${priority}</span>`;
     } else {
       html += `<span class="domain-priority-badge hidden" data-domain-priority-badge="${domain.id}"></span>`;
     }
-    html += `</span>`;
+    html += `<span class="domain-title-text">${esc(domain.title)}</span>`;
+    html += `<span class="domain-maturity" data-domain-maturity="${domain.id}"></span>`;
+    html += `<span class="domain-score" data-domain-score="${domain.id}">\u2014</span>`;
     html += `</h2>`;
 
     // Capabilities
@@ -5005,6 +5339,11 @@ const Poster = (() => {
       if (el) {
         el.textContent = Scoring.formatScore(domain.score);
         el.style.color = domain.score !== null ? Scoring.getScoreColor(domain.score) : '';
+      }
+
+      const matEl = document.querySelector(`[data-domain-maturity="${domain.id}"]`);
+      if (matEl) {
+        matEl.innerHTML = Utils.getMaturitySvg(domain.score);
       }
 
       for (const cap of domain.capabilities) {
@@ -5041,6 +5380,11 @@ const Poster = (() => {
         overallEl.classList.add('unscored');
         overallEl.style.color = '';
       }
+    }
+
+    const overallIcon = document.getElementById('overall-maturity-icon');
+    if (overallIcon) {
+      overallIcon.innerHTML = Utils.getMaturitySvg(scores.overall);
     }
   }
 
@@ -5413,7 +5757,8 @@ const Config = (() => {
 
         for (const action of cap.actions) {
           const currentWeight = Scoring.getEffectiveWeight(action, state.config);
-          html += `<div class="config-action-row">`;
+          const dimmed = currentWeight === 0 ? ' dimmed' : '';
+          html += `<div class="config-action-row${dimmed}">`;
           html += `<span class="config-action-name" title="${esc(action.description || '')}">${esc(action.title)}</span>`;
           html += `<span class="config-action-weight">`;
           html += `<input type="number" data-weight-action="${action.id}" value="${currentWeight}" min="0" max="10" step="0.1">`;
@@ -5435,9 +5780,29 @@ const Config = (() => {
     html += `<div class="config-actions">`;
     html += `<button class="config-btn-action" id="config-export">Export JSON</button>`;
     html += `<button class="config-btn-action" id="config-import">Import JSON</button>`;
+    html += `<button class="config-btn-action" id="config-save-html">Save As Read-Only HTML</button>`;
     html += `<button class="config-btn-action danger" id="config-reset">Reset All</button>`;
     html += `</div>`;
     html += `</div>`;
+
+    // Maturity Thresholds
+    const thresholds = (state.config.thresholds && state.config.thresholds.length === 4)
+      ? state.config.thresholds : Scoring.DEFAULT_THRESHOLDS;
+    const thresholdLabels = ['Run', 'Walk', 'Crawl', 'Pre-crawl'];
+    html += `<div class="config-section">`;
+    html += `<h3>Maturity Thresholds</h3>`;
+    html += `<div class="config-thresholds">`;
+    thresholds.forEach((t, i) => {
+      html += `<div class="config-threshold-row">`;
+      html += `<span class="threshold-label">${thresholdLabels[i]}</span>`;
+      html += `<span class="threshold-inputs">`;
+      html += `<label>&ge;</label>`;
+      html += `<input type="number" class="threshold-min" data-threshold-idx="${i}" value="${t.min}" min="0" max="10" step="0.5">`;
+      html += `<input type="color" class="threshold-color" data-threshold-idx="${i}" value="${t.color}">`;
+      html += `</span>`;
+      html += `</div>`;
+    });
+    html += `</div></div>`;
 
     // Diagnostics
     const diagOn = state.config.diagnostics || false;
@@ -5511,6 +5876,29 @@ const Config = (() => {
       }
     });
 
+    // Threshold inputs
+    document.querySelectorAll('.threshold-min, .threshold-color').forEach(input => {
+      input.addEventListener('change', () => {
+        const thresholds = [];
+        for (let i = 0; i < 4; i++) {
+          const minEl = document.querySelector(`.threshold-min[data-threshold-idx="${i}"]`);
+          const colorEl = document.querySelector(`.threshold-color[data-threshold-idx="${i}"]`);
+          thresholds.push({
+            min: parseFloat(minEl.value) || 0,
+            color: colorEl.value
+          });
+        }
+        // Sort descending by min
+        thresholds.sort((a, b) => b.min - a.min);
+        App.setConfig('thresholds', thresholds);
+      });
+    });
+
+    // Save As HTML
+    document.getElementById('config-save-html').addEventListener('click', () => {
+      Storage.saveAsHTML();
+    });
+
     // Diagnostics toggle
     document.getElementById('config-diagnostics').addEventListener('change', (e) => {
       App.setConfig('diagnostics', e.target.checked);
@@ -5527,11 +5915,356 @@ const Config = (() => {
 
 
 /* === charts.js === */
-/* Charts — Phase 2 stub */
+/* Charts — Canvas API (domain maturity, capability bars, distribution) */
 
 const Charts = (() => {
+  let lastScores = null;
+
   function render(scores) {
-    // Phase 2: Radar, bar, and distribution charts via Canvas API / SVG
+    lastScores = scores;
+    // Only draw if canvases are visible (have non-zero dimensions)
+    const testCanvas = document.getElementById('chart-domains');
+    if (testCanvas && testCanvas.clientWidth > 0) {
+      drawDomainMaturity(scores);
+      drawCapabilityBars(scores);
+      drawDistribution(scores);
+    } else {
+      // Schedule a redraw when the Results tab becomes visible
+      requestAnimationFrame(() => {
+        if (lastScores) {
+          const c = document.getElementById('chart-domains');
+          if (c && c.clientWidth > 0) {
+            drawDomainMaturity(lastScores);
+            drawCapabilityBars(lastScores);
+            drawDistribution(lastScores);
+          }
+        }
+      });
+    }
+  }
+
+  function drawEmptyMessage(ctx, w, h, msg) {
+    ctx.fillStyle = '#bbb';
+    ctx.font = '13px IBM Plex Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(msg, w / 2, h / 2);
+  }
+
+  // === Domain Maturity — vertical columns with icons and priorities ===
+  function drawDomainMaturity(scores) {
+    const canvas = document.getElementById('chart-domains');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, w, h);
+
+    const domains = sortDomains(scores.domains);
+    const n = domains.length;
+    if (n === 0) { drawEmptyMessage(ctx, w, h, 'No domains'); return; }
+
+    const hasAnyScore = domains.some(d => d.score !== null);
+    const state = App.getState();
+    const thresholds = Scoring.getThresholds();
+    const chartTop = 30;
+    const chartBottom = h - 60;
+    const chartH = chartBottom - chartTop;
+    const colWidth = Math.min(120, (w - 80) / n);
+    const gap = (w - n * colWidth) / (n + 1);
+
+    // Y-axis gridlines at threshold values
+    ctx.strokeStyle = '#e8e8e8';
+    ctx.lineWidth = 0.5;
+    ctx.font = '9px IBM Plex Sans, sans-serif';
+    ctx.fillStyle = '#bbb';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    for (const t of thresholds) {
+      const y = chartBottom - (t.min / 10) * chartH;
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.moveTo(35, y);
+      ctx.lineTo(w - 10, y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillText(t.min.toFixed(1), 30, y);
+    }
+    // Top line (10)
+    const topY = chartBottom - chartH;
+    ctx.beginPath();
+    ctx.setLineDash([3, 3]);
+    ctx.moveTo(35, topY);
+    ctx.lineTo(w - 10, topY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillText('10', 30, topY);
+
+    // Draw columns
+    domains.forEach((d, i) => {
+      const x = gap + i * (colWidth + gap);
+      const priority = (state.priorities && state.priorities[d.id]) || '';
+
+      // Column bar
+      if (d.score !== null) {
+        const barH = (d.score / 10) * chartH;
+        const barY = chartBottom - barH;
+        const color = Scoring.getScoreColor(d.score);
+
+        // Bar with gradient feel
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.85;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(x, barY, colWidth, barH, [6, 6, 0, 0]);
+        } else {
+          ctx.rect(x, barY, colWidth, barH);
+        }
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+
+        // Score on bar
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 16px IBM Plex Sans, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = barH > 30 ? 'top' : 'bottom';
+        const scoreY = barH > 30 ? barY + 8 : barY - 4;
+        ctx.fillText(Scoring.formatScore(d.score), x + colWidth / 2, scoreY);
+
+        // Maturity level label
+        const level = Utils.getMaturityLevel(d.score);
+        if (level) {
+          ctx.fillStyle = '#666';
+          ctx.font = '10px IBM Plex Sans, sans-serif';
+          ctx.textBaseline = 'top';
+          const levelLabel = level.charAt(0).toUpperCase() + level.slice(1).replace('precrawl', 'Pre-crawl');
+          ctx.fillText(levelLabel, x + colWidth / 2, chartBottom + 36);
+        }
+      } else {
+        // Empty column
+        ctx.fillStyle = '#f0f0f0';
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(x, chartTop, colWidth, chartH, [6, 6, 0, 0]);
+        } else {
+          ctx.rect(x, chartTop, colWidth, chartH);
+        }
+        ctx.fill();
+      }
+
+      // Domain name
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 11px IBM Plex Sans, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      const name = d.title.length > 18 ? d.title.substring(0, 16) + '\u2026' : d.title;
+      const label = priority ? '#' + priority + ' ' + name : name;
+      ctx.fillText(label, x + colWidth / 2, chartBottom + 6);
+
+      // Baseline
+      ctx.strokeStyle = '#ccc';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, chartBottom);
+      ctx.lineTo(x + colWidth, chartBottom);
+      ctx.stroke();
+    });
+  }
+
+  // === Capability Bars (horizontal, grouped by domain) ===
+  function sortDomains(domains) {
+    const PILLAR_ORDER = ['understand', 'quantify', 'optimize'];
+    const FOUNDATION = ['manage'];
+    const pillars = domains
+      .filter(d => !FOUNDATION.some(kw => d.title.toLowerCase().includes(kw)))
+      .sort((a, b) => {
+        const ai = PILLAR_ORDER.findIndex(kw => a.title.toLowerCase().includes(kw));
+        const bi = PILLAR_ORDER.findIndex(kw => b.title.toLowerCase().includes(kw));
+        return (ai >= 0 ? ai : 99) - (bi >= 0 ? bi : 99);
+      });
+    const foundation = domains.filter(d => FOUNDATION.some(kw => d.title.toLowerCase().includes(kw)));
+    return [...pillars, ...foundation];
+  }
+
+  function drawCapabilityBars(scores) {
+    const canvas = document.getElementById('chart-capabilities');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth;
+
+    const headerH = 24;
+    const capRowH = 22;
+    const spacing = 8;
+    const sorted = sortDomains(scores.domains);
+    let totalH = 10;
+
+    for (const d of sorted) {
+      totalH += headerH;
+      for (const c of d.capabilities) {
+        if (!c.hidden) totalH += capRowH;
+      }
+      totalH += spacing;
+    }
+    totalH = Math.max(150, totalH + 10);
+
+    canvas.style.height = totalH + 'px';
+    canvas.width = w * dpr;
+    canvas.height = totalH * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, w, totalH);
+
+    const labelWidth = 200;
+    const barMaxW = w - labelWidth - 50;
+    let y = 10;
+
+    for (const d of sorted) {
+      // Domain header
+      ctx.fillStyle = '#0080AF';
+      ctx.font = 'bold 12px IBM Plex Sans, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(d.title, 4, y + headerH / 2);
+      y += headerH;
+
+      // Capability bars
+      for (const c of d.capabilities) {
+        if (c.hidden) continue;
+
+        ctx.fillStyle = '#555';
+        ctx.font = '11px IBM Plex Sans, sans-serif';
+        ctx.textAlign = 'left';
+        const name = c.title.length > 28 ? c.title.substring(0, 26) + '\u2026' : c.title;
+        ctx.fillText(name, 12, y + capRowH / 2);
+
+        if (c.score !== null) {
+          const barW = (c.score / 10) * barMaxW;
+          ctx.fillStyle = Scoring.getScoreColor(c.score);
+          ctx.beginPath();
+          if (ctx.roundRect) {
+            ctx.roundRect(labelWidth, y + 3, barW, capRowH - 6, 3);
+          } else {
+            ctx.rect(labelWidth, y + 3, barW, capRowH - 6);
+          }
+          ctx.fill();
+
+          ctx.fillStyle = '#333';
+          ctx.font = '10px IBM Plex Sans, sans-serif';
+          ctx.fillText(Scoring.formatScore(c.score), labelWidth + barW + 6, y + capRowH / 2);
+        } else {
+          ctx.fillStyle = '#f0f0f0';
+          ctx.beginPath();
+          if (ctx.roundRect) {
+            ctx.roundRect(labelWidth, y + 3, barMaxW, capRowH - 6, 3);
+          } else {
+            ctx.rect(labelWidth, y + 3, barMaxW, capRowH - 6);
+          }
+          ctx.fill();
+        }
+
+        y += capRowH;
+      }
+
+      y += spacing;
+    }
+  }
+
+  // === Score Distribution Histogram (high scores on left) ===
+  function drawDistribution(scores) {
+    const canvas = document.getElementById('chart-distribution');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, w, h);
+
+    const thresholds = Scoring.getThresholds();
+    const maturityLabels = ['Run', 'Walk', 'Crawl', 'Pre-crawl'];
+
+    // Build buckets (high to low)
+    const buckets = [];
+    for (let i = 0; i < thresholds.length; i++) {
+      const min = thresholds[i].min;
+      const max = (i === 0) ? 10 : thresholds[i - 1].min;
+      buckets.push({
+        label: maturityLabels[i] || (min + '-' + max),
+        range: min.toFixed(1) + '-' + max.toFixed(1),
+        min, max,
+        color: thresholds[i].color,
+        count: 0
+      });
+    }
+    buckets.push({ label: 'N/A', range: '', min: -1, max: -1, color: '#c8c8c8', count: 0 });
+
+    // Count actions
+    for (const d of scores.domains) {
+      for (const c of d.capabilities) {
+        if (c.hidden) continue;
+        for (const a of c.actions) {
+          if (a.weight <= 0) continue;
+          if (a.score === null || !a.responded) {
+            buckets[buckets.length - 1].count++;
+          } else {
+            let placed = false;
+            for (let i = 0; i < buckets.length - 1; i++) {
+              if (a.score >= buckets[i].min) {
+                buckets[i].count++;
+                placed = true;
+                break;
+              }
+            }
+            if (!placed) buckets[buckets.length - 1].count++;
+          }
+        }
+      }
+    }
+
+    const maxCount = Math.max(1, ...buckets.map(b => b.count));
+    const barWidth = Math.floor((w - 60) / buckets.length) - 8;
+    const chartH = h - 50;
+    const chartBottom = h - 35;
+
+    ctx.textAlign = 'center';
+
+    buckets.forEach((b, i) => {
+      const x = 30 + i * (barWidth + 8);
+      const barH = (b.count / maxCount) * chartH;
+
+      ctx.fillStyle = b.color;
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(x, chartBottom - barH, barWidth, barH, [3, 3, 0, 0]);
+      } else {
+        ctx.rect(x, chartBottom - barH, barWidth, barH);
+      }
+      ctx.fill();
+
+      // Count
+      ctx.fillStyle = '#333';
+      ctx.font = '11px IBM Plex Sans, sans-serif';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(b.count, x + barWidth / 2, chartBottom - barH - 2);
+
+      // Label
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 10px IBM Plex Sans, sans-serif';
+      ctx.textBaseline = 'top';
+      ctx.fillText(b.label, x + barWidth / 2, chartBottom + 3);
+
+      if (b.range) {
+        ctx.fillStyle = '#999';
+        ctx.font = '9px IBM Plex Sans, sans-serif';
+        ctx.fillText(b.range, x + barWidth / 2, chartBottom + 16);
+      }
+    });
   }
 
   return { render };
@@ -5560,6 +6293,7 @@ const App = (() => {
     Config.render(specData, state);
 
     applyConfig();
+    initNotes();
     recalculate();
   }
 
@@ -5642,6 +6376,10 @@ const App = (() => {
           tab.classList.remove('hidden');
           tab.classList.add('active');
         }
+        // Redraw charts when switching to Results tab
+        if (btn.dataset.tab === 'results') {
+          requestAnimationFrame(() => recalculate());
+        }
       });
     });
   }
@@ -5696,10 +6434,25 @@ const App = (() => {
     emit('priorityChanged', { domainId, rank });
   }
 
+  function initNotes() {
+    const el = document.getElementById('assessment-notes');
+    if (!el) return;
+    if (state.notes) el.innerHTML = state.notes;
+    el.addEventListener('input', () => {
+      setNotes(el.innerHTML);
+    });
+  }
+
+  function setNotes(text) {
+    state.notes = text;
+    Storage.save(state);
+  }
+
   function recalculate() {
     const scores = Scoring.computeAllScores(specData, state.responses, state.config);
     Poster.update(scores, state);
     Assess.updateScores(scores);
+    Charts.render(scores);
   }
 
   function getState() { return state; }
@@ -5726,8 +6479,196 @@ const App = (() => {
 
   document.addEventListener('DOMContentLoaded', init);
 
-  return { setResponse, setConfig, setPriority, getState, getSpecData, setState, on, recalculate, getDefault };
+  return { setResponse, setConfig, setPriority, setNotes, getState, getSpecData, setState, on, recalculate, getDefault };
 })();
+
+</script>
+<script type="text/html" id="readonly-template">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assessment Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'IBM Plex Sans', sans-serif; color: rgba(0,0,0,0.85); background: #fafafa; }
+    .hidden { display: none !important; }
+
+    header { background: #0080AF; color: #fff; padding: 12px 24px; text-align: center; }
+    header h1 { font-size: 20px; font-weight: 600; }
+    header p { font-size: 13px; opacity: 0.85; }
+
+    nav { display: flex; justify-content: center; gap: 4px; margin-top: 8px; }
+    .tab-btn { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 6px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px;
+      background: transparent; color: #fff; cursor: pointer; }
+    .tab-btn.active { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
+
+    main { padding: 16px; max-width: 1200px; margin: 0 auto; }
+
+    /* Poster styles (simplified) */
+    .poster-overall { text-align: center; margin-bottom: 12px; }
+    .poster-overall-label { font-size: 14px; color: rgba(0,0,0,0.5); }
+    .poster-overall-value { font-size: 28px; font-weight: 700; margin-left: 10px; }
+    .poster-outer { background: #0080AF; border-radius: 0 0 20px 20px; padding: 4px; }
+    .poster-inner { background: #fff; border-radius: 16px; padding: 12px; }
+    .poster-pillars { display: flex; gap: 4px; margin-bottom: 4px; }
+    .poster-pillars > .domain-card { flex: 1; }
+    .domain-card { background: #CCF4E9; border-radius: 12px; padding: 8px; }
+    .domain-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .domain-title-text { flex: 1; }
+    .domain-score { font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.6); padding: 1px 6px; border-radius: 4px; }
+    .priority-badge { font-size: 11px; font-weight: 600; color: #0080AF; background: rgba(255,255,255,0.7); padding: 1px 5px; border-radius: 3px; }
+    .cap-row { background: #fff; border-radius: 6px; padding: 6px 8px; margin: 2px 0; display: flex; align-items: center; position: relative; }
+    .cap-name { font-size: 12px; font-weight: 500; flex: 1; position: relative; z-index: 1; }
+    .cap-score { font-size: 12px; font-weight: 600; position: relative; z-index: 1; }
+    .cap-bar { position: absolute; bottom: 0; left: 0; height: 4px; border-radius: 0 0 6px 6px; }
+    .poster-foundation .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    .poster-pillars .cap-grid { display: flex; flex-direction: column; gap: 2px; }
+
+    /* Details tab */
+    .details-domain { margin-bottom: 20px; }
+    .details-domain h2 { font-size: 16px; color: #0080AF; border-bottom: 2px solid #0080AF; padding-bottom: 4px; margin-bottom: 8px; }
+    .details-cap { background: #f8f9fa; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
+    .details-cap h3 { font-size: 14px; margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .details-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .details-table th { text-align: left; padding: 4px 8px; border-bottom: 1px solid #ddd; color: rgba(0,0,0,0.5); }
+    .details-table td { padding: 4px 8px; border-bottom: 1px solid #f0f0f0; }
+
+    footer { text-align: center; padding: 12px; font-size: 11px; color: rgba(0,0,0,0.4); border-top: 1px solid #e0e0e0; margin-top: 24px; }
+    footer a { color: rgba(0,0,0,0.5); text-decoration: none; }
+
+    @media print {
+      nav, .tab-btn { display: none !important; }
+      header { background: none !important; color: #000; border-bottom: 2px solid #0080AF; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="ro-title">Assessment Report</h1>
+    <p id="ro-subtitle"></p>
+    <nav>
+      <button class="tab-btn active" onclick="showTab('results')">Results</button>
+      <button class="tab-btn" onclick="showTab('details')">Details</button>
+    </nav>
+  </header>
+  <main>
+    <div id="tab-results"></div>
+    <div id="tab-details" class="hidden"></div>
+  </main>
+  <footer>
+    <p id="ro-footer">
+      Based on <a href="https://github.com/FinOpsPP/Framework-Assessment/">FinOps++ Framework Assessment</a> and
+      <a href="https://www.finops.org/framework/">FinOps Framework</a> by
+      <a href="https://www.finops.org/">FinOps Foundation</a>
+    </p>
+  </footer>
+
+  <script id="assessment-state" type="application/json">
+  /* STATE_PLACEHOLDER */
+  <\/script>
+
+  <script>
+    function showTab(name) {
+      document.getElementById('tab-results').classList.toggle('hidden', name !== 'results');
+      document.getElementById('tab-details').classList.toggle('hidden', name !== 'details');
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    (function() {
+      const el = document.getElementById('assessment-state');
+      let data;
+      try { data = JSON.parse(el.textContent); } catch(e) { document.body.innerHTML = '<p>Error loading assessment data.</p>'; return; }
+
+      const { config, scores, priorities, specData } = data;
+      const FOUNDATION = ['manage'];
+      const PILLAR_ORDER = ['understand', 'quantify', 'optimize'];
+
+      // Title
+      document.getElementById('ro-title').textContent = config.title || 'Assessment Report';
+      document.getElementById('ro-subtitle').textContent = config.subtitle || '';
+      document.title = config.title || 'Assessment Report';
+      document.getElementById('ro-footer').insertAdjacentHTML('beforeend',
+        '<br>Generated ' + new Date(data.savedAt).toLocaleDateString());
+
+      // Color helper
+      const thresholds = (config.thresholds && config.thresholds.length === 4) ? config.thresholds :
+        [{min:8.0,color:'#00C693'},{min:5.0,color:'#009664'},{min:2.0,color:'#006432'},{min:0,color:'#646464'}];
+      function scoreColor(s) {
+        if (s === null || s === undefined) return '#c8c8c8';
+        var r = Math.round(s * 10) / 10;
+        for (const t of thresholds) { if (r >= t.min) return t.color; }
+        return '#646464';
+      }
+      function fmt(s) { return s === null || s === undefined ? '\u2014' : s.toFixed(1); }
+
+      // Render Results poster
+      const isFoundation = d => FOUNDATION.some(kw => d.title.toLowerCase().includes(kw));
+      const pillarSort = d => { const i = PILLAR_ORDER.findIndex(kw => d.title.toLowerCase().includes(kw)); return i >= 0 ? i : 99; };
+      const pillars = scores.domains.filter(d => !isFoundation(d)).sort((a,b) => pillarSort(a) - pillarSort(b));
+      const foundation = scores.domains.filter(d => isFoundation(d));
+
+      let rh = '<div class="poster-overall"><span class="poster-overall-label">Overall Score</span>';
+      rh += '<span class="poster-overall-value" style="color:' + scoreColor(scores.overall) + '">' + fmt(scores.overall) + '</span></div>';
+      rh += '<div class="poster-outer"><div class="poster-inner">';
+      rh += '<div class="poster-pillars">';
+      pillars.forEach(d => { rh += renderDomainCard(d); });
+      rh += '</div>';
+      foundation.forEach(d => { rh += '<div class="poster-foundation">' + renderDomainCard(d, true) + '</div>'; });
+      rh += '</div></div>';
+      document.getElementById('tab-results').innerHTML = rh;
+
+      function renderDomainCard(d, isF) {
+        const p = priorities[d.id];
+        let h = '<div class="domain-card"><div class="domain-title">';
+        if (p) h += '<span class="priority-badge">#' + p + '</span>';
+        h += '<span class="domain-title-text">' + d.title + '</span>';
+        h += '<span class="domain-score" style="color:' + scoreColor(d.score) + '">' + fmt(d.score) + '</span>';
+        h += '</div><div class="cap-grid">';
+        d.capabilities.forEach(c => {
+          if (c.hidden) return;
+          h += '<div class="cap-row">';
+          if (c.score !== null) h += '<div class="cap-bar" style="width:' + (c.score*10) + '%;background:' + scoreColor(c.score) + '"></div>';
+          h += '<span class="cap-name">' + c.title + '</span>';
+          h += '<span class="cap-score" style="color:' + scoreColor(c.score) + '">' + fmt(c.score) + '</span>';
+          h += '</div>';
+        });
+        h += '</div></div>';
+        return h;
+      }
+
+      // Notes
+      if (data.notes) {
+        rh += '<div style="max-width:1200px;margin:24px auto 0;padding:0 16px;font-size:13px;line-height:1.6;color:rgba(0,0,0,0.8)">';
+        rh += data.notes;
+        rh += '</div>';
+      }
+
+      // Render Details tab
+      let dh = '';
+      scores.domains.forEach(d => {
+        dh += '<div class="details-domain"><h2>' + d.title + '</h2>';
+        d.capabilities.forEach(c => {
+          if (c.hidden) return;
+          dh += '<div class="details-cap"><h3><span>' + c.title + '</span><span style="color:' + scoreColor(c.score) + '">' + fmt(c.score) + '</span></h3>';
+          dh += '<table class="details-table"><thead><tr><th>Action</th><th>Score</th></tr></thead><tbody>';
+          c.actions.forEach(a => {
+            if (a.weight <= 0) return;
+            dh += '<tr><td>' + a.title + '</td><td style="color:' + scoreColor(a.score) + '">' + fmt(a.score) + '</td></tr>';
+          });
+          dh += '</tbody></table></div>';
+        });
+        dh += '</div>';
+      });
+      document.getElementById('tab-details').innerHTML = dh;
+    })();
+  <\/script>
+</body>
+</html>
 
 </script>
 </body>
