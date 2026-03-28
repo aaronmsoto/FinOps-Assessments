@@ -9,30 +9,67 @@ const Scoring = (() => {
     return 'rgb(100, 100, 100)';
   }
 
+  // All 7 score types from the FinOps++ spec:
+  // binary, bucket, multi_bucket, sequential, threshold, percent, calculation
+  //
+  // binary: yes/no → 0 or 10
+  // bucket: unordered checklist of independent items → 10*Ceil(x/N)
+  // multi_bucket: multiple weighted groups → select matching scoring entry
+  // sequential: ordered steps done in order → select matching scoring entry
+  // threshold: ordered levels, can skip earlier → select matching scoring entry
+  // percent: percentage bands (0-100%) → select matching scoring entry
+  // calculation: catch-all custom formula → select matching scoring entry
+
   function computeActionScore(action, response) {
     if (response === null || response === undefined) return null;
 
     switch (action.scoreType) {
       case 'binary':
+        // response is the selected score (0 or 10)
         return typeof response === 'number' ? response : null;
 
       case 'bucket': {
+        // response is array of booleans for each checklist item
         if (!Array.isArray(response)) return null;
         const checkedCount = response.filter(Boolean).length;
-        const items = parseBucketItems(action.formula);
-        const totalItems = items.length;
-        if (totalItems === 0) return null;
-        return 10 * Math.ceil(checkedCount / totalItems);
+        // Look up score from scoring entries by checked count
+        // Entry 0 = "No items", Entry 1 = "1 item", etc.
+        if (checkedCount < action.scoring.length) {
+          return action.scoring[checkedCount].score;
+        }
+        // If more checked than entries, use last entry
+        return action.scoring[action.scoring.length - 1].score;
       }
 
-      case 'linear':
-        return typeof response === 'number' ? response : null;
+      case 'sequential': {
+        // response is array of booleans for each step (must be in order)
+        if (!Array.isArray(response)) {
+          // Fallback: if response is a number (from radio select), use directly
+          return typeof response === 'number' ? response : null;
+        }
+        // Count consecutive completed steps from the start
+        let completedSteps = 0;
+        for (let i = 0; i < response.length; i++) {
+          if (response[i]) completedSteps++;
+          else break;
+        }
+        // Look up score from scoring entries (entry 0 = none, entry 1 = step 1, etc.)
+        if (completedSteps < action.scoring.length) {
+          return action.scoring[completedSteps].score;
+        }
+        return action.scoring[action.scoring.length - 1].score;
+      }
 
-      case 'value':
+      case 'multi_bucket':
+      case 'threshold':
+      case 'percent':
+      case 'calculation':
+        // All these use a single selected score from the scoring entries
         return typeof response === 'number' ? response : null;
 
       default:
-        return null;
+        // Unknown type — treat as direct score selection
+        return typeof response === 'number' ? response : null;
     }
   }
 
@@ -41,6 +78,13 @@ const Scoring = (() => {
     return formula.split('\n')
       .filter(line => line.trim().startsWith('*'))
       .map(line => line.trim().replace(/^\*\s*/, ''));
+  }
+
+  function parseSequentialItems(formula) {
+    if (!formula) return [];
+    return formula.split('\n')
+      .filter(line => /^\s*\d+[\.\)]\s/.test(line))
+      .map(line => line.trim().replace(/^\d+[\.\)]\s*/, ''));
   }
 
   function computeCapabilityScore(capability, responses, config) {
@@ -160,6 +204,7 @@ const Scoring = (() => {
     getScoreColor,
     computeActionScore,
     parseBucketItems,
+    parseSequentialItems,
     computeCapabilityScore,
     computeDomainScore,
     computeOverallScore,

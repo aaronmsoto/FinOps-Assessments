@@ -79,7 +79,6 @@
     <main id="app-main">
       <section id="tab-results" class="tab-content active">
         <div id="poster-container"></div>
-        <div id="overall-score-container"></div>
       </section>
       <section id="tab-assess" class="tab-content hidden">
         <div id="assess-container"></div>
@@ -99,6 +98,8 @@
 
     <footer id="app-footer">
       <p>
+        Based on 
+        <a href="https://github.com/FinOpsPP/Framework-Assessment/" target="_blank" rel="noopener">FinOps++ Framework Assessment</a> and 
         <a href="https://www.finops.org/framework/" target="_blank" rel="noopener">FinOps Framework</a> by
         <a href="https://www.finops.org/" target="_blank" rel="noopener">FinOps Foundation</a>
       </p>
@@ -111,6 +112,7 @@
 
   <!-- Development mode: load individual JS files and sample data -->
   <!-- These script tags are replaced by inlined code during assembly -->
+  <script src="js/utils.js"></script>
   <script src="js/scoring.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/poster.js"></script>

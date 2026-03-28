@@ -28,6 +28,7 @@ def assessment_generate(profile: str, base_path: str, domains: list[dict]) -> No
     # 4. Inline all JS files (order matters)
     js_dir = os.path.join(template_dir, 'js')
     js_order = [
+        'utils.js',
         'scoring.js',
         'storage.js',
         'poster.js',
@@ -113,8 +114,8 @@ def _build_data_block(profile: str, domains: list[dict]) -> dict:
                     'title': action.get('action', ''),
                     'description': action.get('description', ''),
                     'serialNumber': action.get('serial_number', ''),
-                    'weight': float(action.get('weights', 1.0) or 1.0),
-                    'scoreType': _infer_score_type(action),
+                    'weight': float(action['weights']) if action.get('weights') is not None else 1.0,
+                    'scoreType': action.get('score_type', 'calculation'),
                     'scoring': scoring,
                     'formula': action.get('formula'),
                     'references': [],
@@ -129,30 +130,6 @@ def _build_data_block(profile: str, domains: list[dict]) -> dict:
 
     return data
 
-
-def _infer_score_type(action: dict) -> str:
-    """Infer the score type from the action data.
-
-    The Python pipeline provides a 'score_type' field. Fall back to
-    heuristics if not present.
-    """
-    st = action.get('score_type') or action.get('scoreType')
-    if st:
-        return str(st).lower()
-
-    # Heuristic fallback
-    formula = action.get('formula')
-    scoring = action.get('scoring') or []
-
-    if formula and '*' in formula.split('\n')[0]:
-        return 'bucket'
-
-    if len(scoring) == 2:
-        scores = [s.get('Score', 0) for s in scoring]
-        if sorted(scores) == [0, 10]:
-            return 'binary'
-
-    return 'linear'
 
 
 def _read_and_concat(directory: str, extension: str) -> str:

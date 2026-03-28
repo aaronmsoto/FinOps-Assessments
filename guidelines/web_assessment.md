@@ -42,6 +42,7 @@ The key architectural principle is that the CLI generates **only the data** — 
 │  │   ├─ config.css                      │               │
 │  │   └─ print.css                       │               │
 │  └─ js/                                 │               │
+│      ├─ utils.js                        │               │
 │      ├─ app.js                          │               │
 │      ├─ scoring.js                      ▼               │
 │      ├─ poster.js              finopspp generate        │
@@ -78,6 +79,7 @@ tools/templates/html/
 │   ├─ config.css           Config panel: gear icon, slide-out, form layout
 │   └─ print.css            @media print: page breaks, hidden controls
 ├─ js/
+│   ├─ utils.js             Shared utilities: HTML escaping, score type constants
 │   ├─ app.js               App shell: tab switching, initialization, event bus
 │   ├─ scoring.js           Scoring engine: action→capability→domain→overall
 │   ├─ poster.js            Poster view: render domains/capabilities, color scale
@@ -173,7 +175,7 @@ Validation checks:
 - Each domain has `id`, `title`, `capabilities` array
 - Each capability has `id`, `title`, `actions` array
 - Each action has `id`, `title`, `scoreType`, `scoring` array
-- `scoreType` is one of the recognized values (`binary`, `bucket`, `linear`, `value`)
+- `scoreType` is one of the recognized values (`binary`, `bucket`, `multi_bucket`, `sequential`, `threshold`, `percent`, `calculation`)
 - Scoring entries have `score` (number) and `condition` (string)
 
 On failure, the app renders a banner at the top of the page with a human-readable message indicating what's wrong and which element is affected. The rest of the UI does not render — a broken data block should not produce a silently broken assessment.
@@ -217,13 +219,17 @@ A slide-out or modal panel accessible via a subtle gear icon in the header. Not 
 | Title | "FinOps Maturity Assessment" | Displayed in header as the main title |
 | Subtitle | "Measure progress over time against accepted standards" | Displayed in header below the title (optional) |
 
-#### Capability Visibility
+#### Capabilities & Actions
 
-A checklist of all capabilities in the profile, grouped by domain. Unchecking a capability hides it from the Assess tab and grays it out in the Results poster. Capabilities excluded from assessment are excluded from scoring. This allows users to scope an assessment to a subset of the framework.
+A unified hierarchical view organized by Domain → Capability → Action, using collapsible `<details>` groups:
 
-#### Action Weight Overrides
+- Each **domain** is a collapsible group header
+- Each **capability** shows a visibility checkbox inline — unchecking hides it from the Assess tab and grays it out in the Results poster
+- Each **action** shows an editable weight input with the original spec weight for reference
 
-A table of all visible actions with editable weight values:
+Hidden capabilities are excluded from scoring. This allows users to scope an assessment to a subset of the framework.
+
+**Action Weight values:**
 
 | Weight | Behavior |
 |---|---|
@@ -239,6 +245,14 @@ Changes to weights dynamically recalculate results. The original spec weights ar
 - **Export JSON**: Download current state (config + all responses + domain priorities) as a `.json` file
 - **Import JSON**: Load a previously exported state, replacing current data
 - **Reset**: Clear all responses and config (with confirmation)
+
+#### Diagnostics Mode
+
+A toggle at the bottom of the Config panel that enables a transparent diagnostics overlay on each action in the Assess tab. When enabled, each action displays a highlighted panel showing its metadata: ID, Serial Number, Score Type, Weight, Formula, and Scoring entries. This aids debugging and helps identify specification issues.
+
+#### Action Filtering
+
+> **Note:** Some actions in the specification may have `Status != Accepted` or `Weight = 0.0` and may not be fully defined (e.g., only a single `Score: 0 / Condition: null` entry). It may be prudent to exclude these from the generated HTML entirely — only generating actions that are `Accepted` and/or have `Weight > 0`. The Config panel would then only show the subset of well-defined actions, while still allowing users to adjust weights (including setting them to zero to further narrow scope). This filtering would happen in the Python composer during data generation, not in the JS UI.
 
 #### Future: Branding
 
@@ -258,33 +272,29 @@ The primary view, shown on initial load. A visual dashboard modeled on the FinOp
 
 Inspired by the `<div class="poster">` layout at [finops.org/framework](https://www.finops.org/framework/), this arranges domains and capabilities in a visual map with color-coded scores:
 
+The layout uses a 3-pillar + foundation structure matching the FinOps Framework poster:
+
 ```
-┌──────────────────────────────────────────────────────┐
-│           FinOps Maturity Assessment                  │
-│                  Subtitle                             │
-├──────────────────────────────────────────────────────┤
-│                                                      │
-│  ┌─ Understand (#_) ┐  ┌─ Quantify (#_) ──┐         │
-│  │ Data Ingest  █░░ │  │ Planning    ██░ │         │
-│  │ Allocation   ██░ │  │ Forecast    █░░ │         │
-│  │ Reporting    ░░░ │  │ Budget      ███ │         │
-│  │ Anomaly      ██░ │  │ KPIs        █░░ │         │
-│  └──────────────────┘  │ Unit Econ   ██░ │         │
-│                         └─────────────────┘         │
-│  ┌─ Optimize (#_) ──┐  ┌─ Manage (#_) ────┐         │
-│  │ Arch & WP    █░░ │  │ ESA         ░░░ │         │
-│  │ Usage Opt    ██░ │  │ Practice    ██░ │         │
-│  │ Rate Opt     ███ │  │ Gov/Policy  █░░ │         │
-│  │ Licensing    █░░ │  │ Education   ██░ │         │
-│  │ Sustain      ░░░ │  │ Invoice     █░░ │         │
-│  └──────────────────┘  │ Assessment  ██░ │         │
-│                         │ Automation  █░░ │         │
-│                         │ Intersect   ██░ │         │
-│                         └─────────────────┘         │
-│                                                      │
-└──────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│  [Understand]    [Quantify]     [Optimize]    [Manage]       │  ← domain tabs
+├──────────────────────────────────────────────────────────────┤
+│  Domains  Capabilities                                       │
+│                                                              │
+│  ┌─ Understand (#_)─┐ ┌─ Quantify (#_) ─┐ ┌─ Optimize (#_)┐│
+│  │ Data Ingest  █░░ │ │ Planning   ██░  │ │ Arch & WP █░░ ││
+│  │ Allocation   ██░ │ │ Forecast   █░░  │ │ Usage Opt ██░ ││
+│  │ Reporting    ░░░ │ │ Budget     ███  │ │ Rate Opt  ███ ││
+│  │ Anomaly      ██░ │ │ KPIs       █░░  │ │ Licensing █░░ ││
+│  └──────────────────┘ │ Unit Econ  ██░  │ │ Sustain   ░░░ ││
+│                        └────────────────┘ └───────────────┘ │
+│                                                              │
+│  ┌─ Manage the FinOps Practice (#_) ────────────────────────┐│
+│  │ ESA  Practice  Gov/Policy  Education  Invoice  ...       ││
+│  └──────────────────────────────────────────────────────────┘│
+└──────────────────────────────────────────────────────────────┘
 
 (#_) = user-assigned domain priority ranking
+Top 3 domains are vertical pillars; "Manage" is a full-width foundation row.
 ```
 
 It is our strong desire to replicate the look of this FinOps Framework poster view EXACTLY as shown here, including if we need to mimic or replicate their HTML and CSS. FinOps Foundation materials can be used with attribution and we should attribute the Framework regardless since this work is based on their Framework.
@@ -293,9 +303,10 @@ Attribution Format: [FinOps Framework](https://www.finops.org/framework/) by [Fi
 
 #### Domain Priority Ranking
 
-Each domain header displays an editable priority number. Users assign a 1–4 stack ranking to indicate organizational priority across the four domains. This is an input layer unique to the web assessment — it does not affect scoring but provides strategic context:
+Users assign a 1–4 stack ranking to indicate organizational priority across the four domains. This is an input layer unique to the web assessment — it does not affect scoring but provides strategic context.
 
-- Displayed as a small editable badge or dropdown on each domain card in the poster
+- Set via a prominent "Step 1: Prioritize Domains" card at the top of the **Assess** tab (before the questionnaire begins)
+- Displayed as a read-only badge on each domain card in the poster Results view
 - Stored alongside assessment data in `localStorage` and included in JSON export/import
 - Visible in print output next to each domain title
 - Duplicate ranks are allowed (ties) — the UI does not enforce uniqueness
@@ -303,9 +314,9 @@ Each domain header displays an editable priority number. Users assign a 1–4 st
 #### Score Visualization
 
 - **Color scale**: >= 7.5 use RGB(0, 198, 147); >= 5.0 use RGB(0, 150, 100); >= 2.5 use RGB(0, 100, 50); else use RGB(100, 100, 100) (configurable thresholds possible in future)
-- **Capability cards**: Show capability name and score bar/fill
+- **Capability cards**: Show capability name, numeric score, and a thin colored bar along the bottom edge (not full-height fill — keeps cards readable)
 - **Domain summary**: Weighted average of capability scores within the domain
-- **Overall score**: Weighted average across all domains, displayed prominently
+- **Overall score**: Centered above the poster pillars, prominently displayed
 - **Unscored state**: Before any assessment input, capabilities display in a neutral/grey state — the poster layout is fully visible but scores are blank
 
 #### Charts
@@ -430,12 +441,19 @@ A questionnaire interface for conducting the assessment, organized by domain and
 
 #### Interaction by Score Type
 
+There are 7 score types defined in the FinOps++ specification. Each maps to a specific UI control:
+
 | Score Type | UI Control |
 |---|---|
-| `binary` | Radio buttons: two options (0 and 10) |
-| `bucket` | Checklist of items from the formula; score auto-calculated from count |
-| `linear` | Dropdown or radio group of all scoring conditions |
-| `value` | Numeric input field with min/max from scoring range |
+| `binary` | Radio buttons: two options (e.g., "None" = 0, "Policy in place" = 10) |
+| `bucket` | Checklist of independent items from the formula; score looked up from scoring entries by checked count |
+| `multi_bucket` | Radio buttons: select the scoring entry that best matches current state |
+| `sequential` | Ordered checkboxes: steps must be completed in sequence; unchecking a step auto-unchecks all later steps |
+| `threshold` | Radio buttons: select the highest threshold level achieved (can skip earlier levels) |
+| `percent` | Radio buttons: select the percentage band (0% through ~100% in 10% increments) |
+| `calculation` | Radio buttons: select the scoring entry that best matches (catch-all type) |
+
+For all types except `binary`, `bucket`, and `sequential` (with formula), the UI renders radio buttons for each entry in the action's `Scoring` list, allowing the user to select the condition that best describes their current state. Sequential actions without a formula also fall back to this radio button pattern.
 
 #### Progress
 
@@ -459,11 +477,9 @@ Hidden capabilities (unchecked in Config) and zero-weight actions are excluded f
 
 ### Formula Parsing
 
-For `bucket` score types, the formula text contains checklist items (lines starting with `*`) and a formula expression (e.g., `10*Ceil(x/3)`). The JS engine must:
+For `bucket` score types, the formula text contains checklist items (lines starting with `*`). The JS engine parses these items as checkboxes and looks up the score from the action's `Scoring` entries by checked count (entry 0 = 0 items, entry 1 = 1 item, etc.). The `10*Ceil(x/N)` expression in the formula is informational — the pre-computed scoring entries are the source of truth.
 
-1. Parse checklist items from the formula text
-2. Count checked items (`x`)
-3. Evaluate the formula expression to produce the score
+For `sequential` score types, the formula may contain numbered items (`1. step`, `2. step`). These render as ordered checkboxes that enforce sequential completion. Score is looked up from scoring entries by count of consecutive completed steps. When no formula is present, sequential actions fall back to radio button selection from the scoring entries.
 
 ---
 
@@ -489,7 +505,7 @@ For `bucket` score types, the formula text contains checklist items (lines start
 4. **Assess tab** — Questionnaire UI with all score type controls, live updates to Results
 5. **Scoring engine** — JS implementation matching `finopspp` scoring logic
 6. **Configuration (⚙)** — Title/subtitle, capability visibility, action weight overrides
-7. **Domain priority ranking** — Editable 1–4 stack rank on domain cards in poster
+7. **Domain priority ranking** — "Step 1" card at top of Assess tab; read-only badges on poster
 8. **LocalStorage** — Auto-save and restore assessment state (config, responses, priorities)
 
 ### Phase 2: Polish
@@ -507,6 +523,7 @@ For `bucket` score types, the formula text contains checklist items (lines start
 16. **Notes/comments** — Free-text field per action for assessor observations
 17. **Guidance panel** — Show supplemental guidance and references inline during assessment
 18. **Dark mode** — Respect `prefers-color-scheme` media query
+19. **Config Maturity Thresholds** — Add to the Config UI the ability to set thresholds and RGB Hex color codes
 
 ---
 
@@ -555,7 +572,7 @@ assessments/
 ## Success Criteria
 
 1. Generated HTML file opens in a browser and renders all domains, capabilities, and actions
-2. All score types (binary, bucket, linear, value) are interactive and score correctly
+2. All score types (binary, bucket, multi_bucket, sequential, threshold, percent, calculation) are interactive and score correctly
 3. Scores match the Excel assessment for the same inputs
 4. Config changes (hide capability, adjust weight) correctly update scoring
 5. Assessment state survives browser refresh (localStorage)

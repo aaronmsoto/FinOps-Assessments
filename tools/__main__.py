@@ -302,9 +302,11 @@ def assessment(profile): # pylint: disable=too-many-branches,too-many-statements
                 # description when it does not exist or is None.
                 actions.append({
                     'action': spec.get('Title') or spec.get('Description'),
+                    'description': spec.get('Description'),
                     'serial_number': serial_number,
                     'weights': spec.get('Weight'),
                     'formula': spec.get('Formula'),
+                    'score_type': spec.get('Score Type'),
                     'scoring': spec.get('Scoring'),
                     'weighted score': None
                 })

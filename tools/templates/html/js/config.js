@@ -12,56 +12,50 @@ const Config = (() => {
     html += `<h3>General</h3>`;
     html += `<div class="config-field">`;
     html += `<label for="config-title">Title</label>`;
-    html += `<input type="text" id="config-title" value="${esc(state.config.title || 'FinOps Maturity Assessment')}" placeholder="Assessment title">`;
+    html += `<input type="text" id="config-title" value="${esc(state.config.title || App.getDefault('title'))}" placeholder="Assessment title">`;
     html += `</div>`;
     html += `<div class="config-field">`;
     html += `<label for="config-subtitle">Subtitle</label>`;
-    html += `<input type="text" id="config-subtitle" value="${esc(state.config.subtitle !== undefined ? state.config.subtitle : 'Measure progress over time against accepted standards')}" placeholder="Optional subtitle">`;
+    html += `<input type="text" id="config-subtitle" value="${esc(state.config.subtitle || App.getDefault('subtitle'))}" placeholder="Optional subtitle">`;
     html += `</div>`;
     html += `</div>`;
 
-    // Capability visibility
+    // Capabilities & Actions (unified hierarchy)
     html += `<div class="config-section">`;
-    html += `<h3>Capability Visibility</h3>`;
+    html += `<h3>Capabilities & Actions</h3>`;
     const hiddenCaps = (state.config.hiddenCapabilities || []);
 
     for (const domain of specData.domains) {
-      html += `<div class="config-cap-group">`;
-      html += `<div class="config-cap-group-title">${esc(domain.title)}</div>`;
+      html += `<details class="config-domain-group" open>`;
+      html += `<summary class="config-domain-title">${esc(domain.title)}</summary>`;
+      html += `<div class="config-domain-body">`;
 
       for (const cap of domain.capabilities) {
-        const checked = !hiddenCaps.includes(cap.id) ? ' checked' : '';
-        html += `<div class="config-cap-item">`;
-        html += `<input type="checkbox" id="cap-vis-${cap.id}" data-cap-vis="${cap.id}"${checked}>`;
-        html += `<label for="cap-vis-${cap.id}">${esc(cap.title)}</label>`;
-        html += `</div>`;
-      }
+        const capChecked = !hiddenCaps.includes(cap.id) ? ' checked' : '';
 
-      html += `</div>`;
-    }
-    html += `</div>`;
+        html += `<details class="config-cap-group" open>`;
+        html += `<summary class="config-cap-summary">`;
+        html += `<input type="checkbox" data-cap-vis="${cap.id}"${capChecked} onclick="event.stopPropagation()">`;
+        html += `<span class="config-cap-name">${esc(cap.title)}</span>`;
+        html += `</summary>`;
+        html += `<div class="config-actions-list">`;
 
-    // Weight overrides
-    html += `<div class="config-section">`;
-    html += `<h3>Action Weights</h3>`;
-    html += `<table class="config-weights-table">`;
-    html += `<thead><tr><th>Action</th><th>Weight</th><th>Spec</th></tr></thead>`;
-    html += `<tbody>`;
-
-    for (const domain of specData.domains) {
-      for (const cap of domain.capabilities) {
         for (const action of cap.actions) {
           const currentWeight = Scoring.getEffectiveWeight(action, state.config);
-          html += `<tr>`;
-          html += `<td title="${esc(cap.title)}">${esc(action.title)}</td>`;
-          html += `<td><input type="number" data-weight-action="${action.id}" value="${currentWeight}" min="0" max="10" step="0.1"></td>`;
-          html += `<td class="original-weight">${action.weight}</td>`;
-          html += `</tr>`;
+          html += `<div class="config-action-row">`;
+          html += `<span class="config-action-name" title="${esc(action.description || '')}">${esc(action.title)}</span>`;
+          html += `<span class="config-action-weight">`;
+          html += `<input type="number" data-weight-action="${action.id}" value="${currentWeight}" min="0" max="10" step="0.1">`;
+          html += `<span class="original-weight">${action.weight}</span>`;
+          html += `</span>`;
+          html += `</div>`;
         }
-      }
-    }
 
-    html += `</tbody></table>`;
+        html += `</div></details>`;
+      }
+
+      html += `</div></details>`;
+    }
     html += `</div>`;
 
     // Data management
@@ -71,6 +65,16 @@ const Config = (() => {
     html += `<button class="config-btn-action" id="config-export">Export JSON</button>`;
     html += `<button class="config-btn-action" id="config-import">Import JSON</button>`;
     html += `<button class="config-btn-action danger" id="config-reset">Reset All</button>`;
+    html += `</div>`;
+    html += `</div>`;
+
+    // Diagnostics
+    const diagOn = state.config.diagnostics || false;
+    html += `<div class="config-section">`;
+    html += `<h3>Diagnostics</h3>`;
+    html += `<div class="config-cap-item">`;
+    html += `<input type="checkbox" id="config-diagnostics"${diagOn ? ' checked' : ''}>`;
+    html += `<label for="config-diagnostics">Show action metadata (ID, Score Type, Formula, Scoring)</label>`;
     html += `</div>`;
     html += `</div>`;
 
@@ -100,7 +104,6 @@ const Config = (() => {
         } else {
           App.setConfig('hiddenCapabilities', [...hidden, capId]);
         }
-        // Re-render assess tab to hide/show capabilities
         Assess.render(App.getSpecData(), App.getState());
         App.recalculate();
       });
@@ -115,7 +118,6 @@ const Config = (() => {
         const weights = currentState.config.weights || {};
         weights[actionId] = weight;
         App.setConfig('weights', weights);
-        // Re-render assess to hide zero-weight actions
         Assess.render(App.getSpecData(), App.getState());
         App.recalculate();
       });
@@ -137,13 +139,17 @@ const Config = (() => {
         App.setState({ responses: {}, config: {}, priorities: {} });
       }
     });
+
+    // Diagnostics toggle
+    document.getElementById('config-diagnostics').addEventListener('change', (e) => {
+      App.setConfig('diagnostics', e.target.checked);
+      document.querySelectorAll('.assess-diagnostics').forEach(el => {
+        el.classList.toggle('hidden', !e.target.checked);
+      });
+    });
   }
 
-  function esc(str) {
-    const d = document.createElement('div');
-    d.textContent = str || '';
-    return d.innerHTML;
-  }
+  const esc = Utils.esc;
 
   return { render };
 })();

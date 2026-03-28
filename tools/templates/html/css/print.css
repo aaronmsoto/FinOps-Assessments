@@ -6,7 +6,8 @@
   .config-btn,
   .config-panel,
   .tab-btn,
-  .domain-priority select,
+  .assess-priority-select,
+  .domain-priority-badge,
   #tab-assess,
   #validation-error,
   footer a {

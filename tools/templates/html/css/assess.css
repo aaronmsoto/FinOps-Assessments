@@ -7,6 +7,79 @@
   font-family: 'IBM Plex Sans', sans-serif;
 }
 
+/* Step 1: Domain Priority Ranking */
+.assess-priority-step {
+  background: #E5F2F7;
+  border: 1px solid #b8dce8;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.assess-priority-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0080AF;
+  margin: 0 0 4px;
+}
+
+.assess-priority-header p {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.55);
+  margin: 0 0 16px;
+}
+
+.assess-priority-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .assess-priority-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.assess-priority-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d4e8f0;
+}
+
+.assess-priority-domain {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.assess-priority-select {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  width: 50px;
+  text-align: center;
+}
+
+/* Step 2 header */
+.assess-step-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0080AF;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #0080AF;
+}
+
 /* Domain sections */
 .assess-domain {
   margin-bottom: 24px;
@@ -134,9 +207,64 @@
   accent-color: #00C693;
 }
 
-/* Linear — radio buttons */
-.assess-linear label {
-  display: block;
+
+/* Sequential — ordered checkboxes */
+.assess-sequential label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
+  margin: 2px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.assess-sequential label:hover:not(.locked) {
+  background: #f0f0f0;
+}
+
+.assess-sequential label.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.assess-sequential .sequential-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #E5F2F7;
+  color: #0080AF;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.assess-sequential label.locked .sequential-number {
+  background: #f0f0f0;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.assess-sequential input[type="checkbox"] {
+  accent-color: #00C693;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.assess-sequential .sequential-text {
+  flex: 1;
+  line-height: 1.3;
+}
+
+/* Scoring select — used for threshold, percent, calculation, multi_bucket */
+.assess-scoring-select label {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
   padding: 6px 10px;
   margin: 2px 0;
   border-radius: 4px;
@@ -145,28 +273,66 @@
   transition: background 0.15s;
 }
 
-.assess-linear label:hover {
+.assess-scoring-select label:hover {
   background: #f0f0f0;
 }
 
-.assess-linear input[type="radio"] {
-  margin-right: 8px;
+.assess-scoring-select input[type="radio"] {
+  margin-right: 4px;
   accent-color: #00C693;
+  flex-shrink: 0;
 }
 
-/* Value — numeric input */
-.assess-value {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.assess-scoring-select .scoring-condition {
+  flex: 1;
 }
 
-.assess-value select {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 13px;
-  padding: 6px 10px;
-  border: 1px solid #ccc;
+.assess-scoring-select .scoring-value {
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* Diagnostics panel per action */
+.assess-diagnostics {
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
   border-radius: 4px;
-  background: #fff;
-  min-width: 250px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  font-size: 11px;
 }
+
+.diag-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.diag-table td {
+  padding: 2px 6px;
+  border-bottom: 1px solid #f0e8c0;
+  vertical-align: top;
+}
+
+.diag-table td:first-child {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+  width: 80px;
+  white-space: nowrap;
+}
+
+.diag-table code {
+  background: #f5f0d8;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 11px;
+}
+
+.diag-table pre {
+  margin: 0;
+  font-size: 10px;
+  white-space: pre-wrap;
+  max-height: 80px;
+  overflow: auto;
+}
+

@@ -65,7 +65,7 @@ const App = (() => {
           const a = c.actions[k];
           if (!a.id || !a.title) return `Action at index ${k} in "${c.title}" missing "id" or "title".`;
           if (!a.scoreType) return `Action "${a.title}" missing "scoreType".`;
-          const validTypes = ['binary', 'bucket', 'linear', 'value'];
+          const validTypes = Utils.ALL_SCORE_TYPES;
           if (!validTypes.includes(a.scoreType)) {
             return `Action "${a.title}" has invalid scoreType "${a.scoreType}". Must be one of: ${validTypes.join(', ')}.`;
           }
@@ -116,9 +116,18 @@ const App = (() => {
     overlay.addEventListener('click', () => panel.classList.add('hidden'));
   }
 
+  const DEFAULTS = {
+    title: 'FinOps Maturity Assessment',
+    subtitle: 'Measure progress over time against accepted standards'
+  };
+
+  function getDefault(key) {
+    return DEFAULTS[key] || '';
+  }
+
   function applyConfig() {
-    const title = (state.config.title || specData.profile.title || 'FinOps Maturity Assessment');
-    const subtitle = (state.config.subtitle !== undefined ? state.config.subtitle : 'Measure progress over time against accepted standards');
+    const title = state.config.title || DEFAULTS.title;
+    const subtitle = (state.config.subtitle !== undefined && state.config.subtitle !== '') ? state.config.subtitle : DEFAULTS.subtitle;
 
     document.getElementById('assessment-title').textContent = title;
     document.getElementById('assessment-subtitle').textContent = subtitle;
@@ -176,5 +185,5 @@ const App = (() => {
 
   document.addEventListener('DOMContentLoaded', init);
 
-  return { setResponse, setConfig, setPriority, getState, getSpecData, setState, on, recalculate };
+  return { setResponse, setConfig, setPriority, getState, getSpecData, setState, on, recalculate, getDefault };
 })();

@@ -23,7 +23,8 @@ const Storage = (() => {
         };
       }
     } catch (e) {
-      console.warn('Failed to load from localStorage:', e);
+      console.warn('Failed to load saved state from localStorage — starting fresh:', e);
+      try { localStorage.removeItem(STORAGE_KEY); } catch (_) { /* ignore */ }
     }
     return { responses: {}, config: {}, priorities: {} };
   }
