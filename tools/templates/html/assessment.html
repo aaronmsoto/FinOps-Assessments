@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinOps Maturity Assessment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* === Base App Styles === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'IBM Plex Sans', sans-serif; color: rgba(0,0,0,0.85); background: #fafafa; }
+    a { color: #0080AF; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .hidden { display: none !important; }
+
+    #app { min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    #app-header { background: #0080AF; color: #fff; padding: 12px 24px; }
+    .header-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .header-titles h1 { font-size: 20px; font-weight: 600; line-height: 1.3; }
+    .header-titles p { font-size: 13px; font-weight: 300; opacity: 0.85; }
+    .header-nav { display: flex; align-items: center; gap: 4px; }
+    .tab-btn {
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 6px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px;
+      background: transparent; color: #fff; cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn:hover { background: rgba(255,255,255,0.15); }
+    .tab-btn.active { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
+    .config-btn {
+      background: transparent; border: none; color: rgba(255,255,255,0.7); cursor: pointer;
+      padding: 6px; border-radius: 6px; transition: color 0.15s; display: flex; align-items: center;
+    }
+    .config-btn:hover { color: #fff; background: rgba(255,255,255,0.15); }
+
+    /* Validation error */
+    .validation-error {
+      background: #fef0f0; color: #d32f2f; border: 1px solid #f5c6cb;
+      padding: 12px 24px; font-size: 14px; text-align: center;
+    }
+
+    /* Main content */
+    #app-main { flex: 1; padding: 16px 0; }
+
+    /* Footer */
+    #app-footer { text-align: center; padding: 12px; font-size: 12px; color: rgba(0,0,0,0.45); border-top: 1px solid #e0e0e0; }
+    #app-footer a { color: rgba(0,0,0,0.55); }
+  </style>
+  <!-- Development mode: load individual CSS files -->
+  <!-- These link tags are replaced by inlined styles during assembly -->
+  <link rel="stylesheet" href="css/poster.css">
+  <link rel="stylesheet" href="css/assess.css">
+  <link rel="stylesheet" href="css/config.css">
+  <link rel="stylesheet" href="css/print.css">
+  <!-- INLINE_CSS_PLACEHOLDER -->
+</head>
+<body>
+  <div id="app">
+    <header id="app-header">
+      <div class="header-content">
+        <div class="header-titles">
+          <h1 id="assessment-title">FinOps Maturity Assessment</h1>
+          <p id="assessment-subtitle">Measure progress over time against accepted standards</p>
+        </div>
+        <nav class="header-nav">
+          <button class="tab-btn active" data-tab="results">Results</button>
+          <button class="tab-btn" data-tab="assess">Assess</button>
+          <button class="config-btn" aria-label="Configuration" title="Configuration">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M8.58 2.08a1.5 1.5 0 0 1 2.84 0l.36 1.08a1.5 1.5 0 0 0 1.91.91l1.08-.36a1.5 1.5 0 0 1 1.42 2.46l-.72.84a1.5 1.5 0 0 0 0 2l.72.84a1.5 1.5 0 0 1-1.42 2.46l-1.08-.36a1.5 1.5 0 0 0-1.91.91l-.36 1.08a1.5 1.5 0 0 1-2.84 0l-.36-1.08a1.5 1.5 0 0 0-1.91-.91l-1.08.36a1.5 1.5 0 0 1-1.42-2.46l.72-.84a1.5 1.5 0 0 0 0-2l-.72-.84A1.5 1.5 0 0 1 5.23 3.7l1.08.36a1.5 1.5 0 0 0 1.91-.91l.36-1.08ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <div id="validation-error" class="validation-error hidden"></div>
+
+    <main id="app-main">
+      <section id="tab-results" class="tab-content active">
+        <div id="poster-container"></div>
+        <div id="overall-score-container"></div>
+      </section>
+      <section id="tab-assess" class="tab-content hidden">
+        <div id="assess-container"></div>
+      </section>
+    </main>
+
+    <aside id="config-panel" class="config-panel hidden">
+      <div class="config-overlay"></div>
+      <div class="config-drawer">
+        <div class="config-header">
+          <h2>Configuration</h2>
+          <button class="config-close" aria-label="Close configuration">&times;</button>
+        </div>
+        <div id="config-content"></div>
+      </div>
+    </aside>
+
+    <footer id="app-footer">
+      <p>
+        <a href="https://www.finops.org/framework/" target="_blank" rel="noopener">FinOps Framework</a> by
+        <a href="https://www.finops.org/" target="_blank" rel="noopener">FinOps Foundation</a>
+      </p>
+    </footer>
+  </div>
+
+  <script id="spec-data" type="application/json">
+  /* SPEC_DATA_PLACEHOLDER */
+  </script>
+
+  <!-- Development mode: load individual JS files and sample data -->
+  <!-- These script tags are replaced by inlined code during assembly -->
+  <script src="js/scoring.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/poster.js"></script>
+  <script src="js/assess.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/charts.js"></script>
+  <script>
+    // Dev mode: load sample-data.json if spec-data placeholder is still present
+    (function() {
+      const el = document.getElementById('spec-data');
+      if (el && el.textContent.trim().startsWith('/*')) {
+        fetch('sample-data.json')
+          .then(r => r.json())
+          .then(data => {
+            el.textContent = JSON.stringify(data);
+            // Now load app.js which triggers DOMContentLoaded init
+            const s = document.createElement('script');
+            s.src = 'js/app.js';
+            document.body.appendChild(s);
+          })
+          .catch(err => {
+            document.getElementById('validation-error').textContent = 'Dev mode: Failed to load sample-data.json — ' + err.message;
+            document.getElementById('validation-error').classList.remove('hidden');
+          });
+      }
+    })();
+  </script>
+  <!-- INLINE_JS_PLACEHOLDER -->
+</body>
+</html>

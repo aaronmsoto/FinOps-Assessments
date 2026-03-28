@@ -1,0 +1,547 @@
+{
+  "generatedAt": "2026-03-28T12:00:00Z",
+  "generator": "finopspp sample",
+  "profile": {
+    "id": 1,
+    "title": "FinOps Foundation",
+    "version": "1.0.0"
+  },
+  "domains": [
+    {
+      "id": 1,
+      "title": "Understand Usage & Cost",
+      "serialNumber": "001",
+      "capabilities": [
+        {
+          "id": 8,
+          "title": "Data Ingestion",
+          "serialNumber": "001",
+          "actions": [
+            {
+              "id": 1,
+              "title": "Establish Cloud Billing Data Pipeline",
+              "description": "Ingest billing data from all cloud providers into a centralized repository.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No centralized billing data pipeline exists" },
+                { "score": 10, "condition": "Billing data from all providers ingested into central repository" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 2,
+              "title": "Integrate Resource-Level Metadata",
+              "description": "Enrich billing data with resource tags, account metadata, and organizational hierarchy.",
+              "serialNumber": "002",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                { "score": 0, "condition": "No items completed" },
+                { "score": 4, "condition": "1 item completed" },
+                { "score": 7, "condition": "2 items completed" },
+                { "score": 10, "condition": "3 items completed" }
+              ],
+              "formula": "* Enrich billing records with resource tags\n* Map resources to organizational hierarchy\n* Integrate account-level metadata\n\n10*Ceil(x/3)",
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "title": "Allocation",
+          "serialNumber": "002",
+          "actions": [
+            {
+              "id": 3,
+              "title": "Define Cost Allocation Strategy",
+              "description": "Establish rules for allocating shared costs to business units.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No cost allocation strategy defined" },
+                { "score": 10, "condition": "Cost allocation strategy documented and implemented" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "title": "Reporting & Analytics",
+          "serialNumber": "003",
+          "actions": [
+            {
+              "id": 4,
+              "title": "Implement Cost Reporting Dashboards",
+              "description": "Create dashboards showing cost trends by team, service, and environment.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                { "score": 0, "condition": "No cost dashboards exist" },
+                { "score": 3, "condition": "Basic cost reports available but not interactive" },
+                { "score": 7, "condition": "Interactive dashboards with drill-down by team and service" },
+                { "score": 10, "condition": "Real-time dashboards with anomaly alerts and trend analysis" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Anomaly Management",
+          "serialNumber": "004",
+          "actions": [
+            {
+              "id": 5,
+              "title": "Configure Cost Anomaly Detection",
+              "description": "Set up automated alerts for unexpected cost spikes.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No anomaly detection configured" },
+                { "score": 10, "condition": "Automated anomaly detection with alert routing" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Quantify Business Value",
+      "serialNumber": "002",
+      "capabilities": [
+        {
+          "id": 18,
+          "title": "Planning & Estimating",
+          "serialNumber": "001",
+          "actions": [
+            {
+              "id": 6,
+              "title": "Establish Cost Estimation Process",
+              "description": "Create a standardized process for estimating costs of new workloads.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No standardized estimation process" },
+                { "score": 10, "condition": "Standardized estimation process with templates" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "title": "Forecasting",
+          "serialNumber": "002",
+          "actions": [
+            {
+              "id": 7,
+              "title": "Create Monthly Cost Forecasts",
+              "description": "Produce monthly forecasts comparing projected vs. actual spend.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No cost forecasting performed" },
+                { "score": 10, "condition": "Monthly forecasts produced and tracked against actuals" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "title": "Budgeting",
+          "serialNumber": "003",
+          "actions": [
+            {
+              "id": 8,
+              "title": "Set Cloud Budget Targets",
+              "description": "Define budget targets per business unit or team.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No cloud budget targets set" },
+                { "score": 10, "condition": "Budget targets defined and tracked per team" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "title": "KPIs & Benchmarking",
+          "serialNumber": "004",
+          "actions": [
+            {
+              "id": 9,
+              "title": "Define FinOps KPIs",
+              "description": "Establish key performance indicators for cost efficiency.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                { "score": 0, "condition": "No items completed" },
+                { "score": 4, "condition": "1 item completed" },
+                { "score": 7, "condition": "2 items completed" },
+                { "score": 10, "condition": "3 items completed" }
+              ],
+              "formula": "* Define cost efficiency KPIs per team\n* Benchmark against industry peers\n* Track KPIs in regular reviews\n\n10*Ceil(x/3)",
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "title": "Unit Economics",
+          "serialNumber": "005",
+          "actions": [
+            {
+              "id": 10,
+              "title": "Calculate Cost Per Transaction",
+              "description": "Measure unit cost metrics tied to business output.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "value",
+              "scoring": [
+                { "score": 0, "condition": "No unit cost metrics tracked" },
+                { "score": 5, "condition": "Unit costs calculated for some services" },
+                { "score": 10, "condition": "Unit costs tracked across all major services with targets" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Optimize Usage & Cost",
+      "serialNumber": "003",
+      "capabilities": [
+        {
+          "id": 3,
+          "title": "Architecting & Workload Placement",
+          "serialNumber": "001",
+          "actions": [
+            {
+              "id": 11,
+              "title": "Evaluate Workload Placement Options",
+              "description": "Assess placement across cloud, on-prem, and SaaS for cost efficiency.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No formal workload placement evaluation" },
+                { "score": 10, "condition": "Workload placement evaluated with cost as a factor" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "title": "Usage Optimization",
+          "serialNumber": "002",
+          "actions": [
+            {
+              "id": 12,
+              "title": "Identify Idle and Underutilized Resources",
+              "description": "Regularly scan for resources that can be rightsized or terminated.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No idle resource identification process" },
+                { "score": 10, "condition": "Regular scans with automated recommendations" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "title": "Rate Optimization",
+          "serialNumber": "003",
+          "actions": [
+            {
+              "id": 13,
+              "title": "Evaluate Commitment-Based Discounts",
+              "description": "Assess reserved instances, savings plans, and committed use discounts.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No commitment-based discount evaluation" },
+                { "score": 10, "condition": "Active commitment management with coverage tracking" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "title": "Licensing & SaaS",
+          "serialNumber": "004",
+          "actions": [
+            {
+              "id": 14,
+              "title": "Track SaaS License Utilization",
+              "description": "Monitor SaaS license usage to eliminate waste.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No SaaS license tracking" },
+                { "score": 10, "condition": "SaaS licenses tracked with utilization metrics" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "title": "Sustainability",
+          "serialNumber": "005",
+          "actions": [
+            {
+              "id": 15,
+              "title": "Track Carbon Impact of Cloud Usage",
+              "description": "Monitor and report on the environmental impact of technology spend.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No carbon impact tracking" },
+                { "score": 10, "condition": "Carbon metrics tracked and included in optimization decisions" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Manage the FinOps Practice",
+      "serialNumber": "004",
+      "capabilities": [
+        {
+          "id": 23,
+          "title": "Executive Strategy Alignment",
+          "serialNumber": "001",
+          "actions": [
+            {
+              "id": 16,
+              "title": "Establish Executive Sponsorship",
+              "description": "Identify and formalize an executive sponsor for the FinOps practice.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No executive sponsor identified" },
+                { "score": 10, "condition": "Executive sponsor formally identified and actively engaged" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "title": "FinOps Practice Operations",
+          "serialNumber": "002",
+          "actions": [
+            {
+              "id": 17,
+              "title": "Define FinOps Team Structure",
+              "description": "Establish roles, responsibilities, and operating model for the FinOps team.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No defined FinOps team structure" },
+                { "score": 10, "condition": "FinOps team with defined roles and operating model" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "title": "Governance, Policy & Risk",
+          "serialNumber": "003",
+          "actions": [
+            {
+              "id": 18,
+              "title": "Establish Cloud Governance Framework",
+              "description": "Define and implement governance policies for cloud usage.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                { "score": 0, "condition": "No items completed" },
+                { "score": 4, "condition": "1 item completed" },
+                { "score": 7, "condition": "2 items completed" },
+                { "score": 10, "condition": "3 items completed" }
+              ],
+              "formula": "* Document cloud governance policies\n* Implement automated policy enforcement\n* Establish exception management process\n\n10*Ceil(x/3)",
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "title": "FinOps Education & Enablement",
+          "serialNumber": "004",
+          "actions": [
+            {
+              "id": 19,
+              "title": "Deliver FinOps Training",
+              "description": "Provide training to engineering and finance teams on FinOps practices.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No FinOps training delivered" },
+                { "score": 10, "condition": "Regular FinOps training program in place" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "title": "Invoicing & Chargeback",
+          "serialNumber": "005",
+          "actions": [
+            {
+              "id": 20,
+              "title": "Implement Chargeback or Showback",
+              "description": "Allocate cloud costs back to consuming teams.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No chargeback or showback mechanism" },
+                { "score": 10, "condition": "Chargeback or showback implemented and used for accountability" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "title": "FinOps Assessment",
+          "serialNumber": "006",
+          "actions": [
+            {
+              "id": 21,
+              "title": "Conduct Regular FinOps Assessments",
+              "description": "Perform periodic maturity assessments of the FinOps practice.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No regular assessments conducted" },
+                { "score": 10, "condition": "Assessments conducted at least annually with action plans" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "title": "Automation, Tools & Services",
+          "serialNumber": "007",
+          "actions": [
+            {
+              "id": 22,
+              "title": "Evaluate FinOps Tooling",
+              "description": "Assess and select tools that support FinOps capabilities.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No formal tool evaluation process" },
+                { "score": 10, "condition": "Tools evaluated against FinOps capabilities with selection criteria" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "title": "Intersecting Disciplines",
+          "serialNumber": "008",
+          "actions": [
+            {
+              "id": 23,
+              "title": "Coordinate with ITAM and ITFM",
+              "description": "Establish working relationships with IT Asset Management and IT Financial Management.",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                { "score": 0, "condition": "No coordination with ITAM or ITFM" },
+                { "score": 10, "condition": "Active collaboration with ITAM and ITFM established" }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

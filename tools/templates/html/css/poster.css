@@ -1,0 +1,184 @@
+/* Poster View — adapted from finops.org/framework poster layout */
+
+.poster {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.poster .grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 1280px) {
+  .poster .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Domain cards */
+.poster .domain-card {
+  background: #CCF4E9;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.poster .domain-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.poster .domain-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.92);
+  margin: 0;
+}
+
+.poster .domain-score {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.56);
+  background: rgba(255, 255, 255, 0.6);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.poster .domain-priority {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.poster .domain-priority select {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 1px 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  width: 40px;
+}
+
+.poster .domain-priority label {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.4);
+  font-weight: 500;
+}
+
+/* Capability cards within domains */
+.poster .capabilities-grid {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.poster .cap-card {
+  background: #fff;
+  border-radius: 6px;
+  min-width: 140px;
+  flex: 1 1 auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.poster .cap-card:hover {
+  border-color: #007758;
+}
+
+.poster .cap-card-inner {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.poster .cap-name {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.92);
+  flex: 1;
+}
+
+.poster .cap-score {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.56);
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.poster .cap-score.scored {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+/* Score bar fill behind capability card */
+.poster .cap-card {
+  position: relative;
+}
+
+.poster .cap-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 6px 0 0 6px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  z-index: 0;
+  opacity: 0.25;
+}
+
+/* Capability hidden/excluded state */
+.poster .cap-card.excluded {
+  opacity: 0.35;
+}
+
+.poster .cap-card.excluded .cap-bar {
+  display: none;
+}
+
+/* Overall score display */
+#overall-score-container {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding: 0 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.overall-score {
+  text-align: center;
+  padding: 12px 32px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.overall-score .label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.56);
+  margin-bottom: 4px;
+}
+
+.overall-score .value {
+  font-size: 28px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.overall-score .value.unscored {
+  color: rgb(200, 200, 200);
+}

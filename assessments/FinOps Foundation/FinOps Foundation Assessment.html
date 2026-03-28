@@ -1,0 +1,5193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinOps Maturity Assessment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* === Base App Styles === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'IBM Plex Sans', sans-serif; color: rgba(0,0,0,0.85); background: #fafafa; }
+    a { color: #0080AF; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .hidden { display: none !important; }
+
+    #app { min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    #app-header { background: #0080AF; color: #fff; padding: 12px 24px; }
+    .header-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .header-titles h1 { font-size: 20px; font-weight: 600; line-height: 1.3; }
+    .header-titles p { font-size: 13px; font-weight: 300; opacity: 0.85; }
+    .header-nav { display: flex; align-items: center; gap: 4px; }
+    .tab-btn {
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 6px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px;
+      background: transparent; color: #fff; cursor: pointer; transition: background 0.15s;
+    }
+    .tab-btn:hover { background: rgba(255,255,255,0.15); }
+    .tab-btn.active { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
+    .config-btn {
+      background: transparent; border: none; color: rgba(255,255,255,0.7); cursor: pointer;
+      padding: 6px; border-radius: 6px; transition: color 0.15s; display: flex; align-items: center;
+    }
+    .config-btn:hover { color: #fff; background: rgba(255,255,255,0.15); }
+
+    /* Validation error */
+    .validation-error {
+      background: #fef0f0; color: #d32f2f; border: 1px solid #f5c6cb;
+      padding: 12px 24px; font-size: 14px; text-align: center;
+    }
+
+    /* Main content */
+    #app-main { flex: 1; padding: 16px 0; }
+
+    /* Footer */
+    #app-footer { text-align: center; padding: 12px; font-size: 12px; color: rgba(0,0,0,0.45); border-top: 1px solid #e0e0e0; }
+    #app-footer a { color: rgba(0,0,0,0.55); }
+  </style>
+  <style>
+/* === assess.css === */
+/* Assess Tab — Questionnaire Styling */
+
+#assess-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+/* Domain sections */
+.assess-domain {
+  margin-bottom: 24px;
+}
+
+.assess-domain-header {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0080AF;
+  padding: 8px 0;
+  border-bottom: 2px solid #0080AF;
+  margin-bottom: 12px;
+}
+
+.assess-domain-progress {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.56);
+  float: right;
+}
+
+/* Capability sections */
+.assess-capability {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.assess-cap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.assess-cap-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  margin: 0;
+}
+
+.assess-cap-progress {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+}
+
+/* Action items */
+.assess-action {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+
+.assess-action.answered {
+  border-color: #00C693;
+}
+
+.assess-action-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  margin: 0 0 4px;
+}
+
+.assess-action-desc {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.56);
+  margin: 0 0 10px;
+}
+
+.assess-action-score {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.45);
+  float: right;
+  margin-top: -20px;
+}
+
+.assess-action-score.scored {
+  color: #007758;
+}
+
+/* Binary — radio buttons */
+.assess-binary label {
+  display: block;
+  padding: 6px 10px;
+  margin: 2px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s;
+}
+
+.assess-binary label:hover {
+  background: #f0f0f0;
+}
+
+.assess-binary input[type="radio"] {
+  margin-right: 8px;
+  accent-color: #00C693;
+}
+
+/* Bucket — checkboxes */
+.assess-bucket label {
+  display: block;
+  padding: 6px 10px;
+  margin: 2px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s;
+}
+
+.assess-bucket label:hover {
+  background: #f0f0f0;
+}
+
+.assess-bucket input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: #00C693;
+}
+
+/* Linear — radio buttons */
+.assess-linear label {
+  display: block;
+  padding: 6px 10px;
+  margin: 2px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s;
+}
+
+.assess-linear label:hover {
+  background: #f0f0f0;
+}
+
+.assess-linear input[type="radio"] {
+  margin-right: 8px;
+  accent-color: #00C693;
+}
+
+/* Value — numeric input */
+.assess-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.assess-value select {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  min-width: 250px;
+}
+
+
+/* === config.css === */
+/* Config Panel — Slide-out Drawer */
+
+.config-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.config-panel.hidden {
+  display: none;
+}
+
+.config-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.config-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 420px;
+  max-width: 90vw;
+  height: 100%;
+  background: #fff;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.config-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.config-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+.config-close:hover {
+  background: #f0f0f0;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+#config-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+/* Config sections */
+.config-section {
+  margin-bottom: 24px;
+}
+
+.config-section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0080AF;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Text inputs */
+.config-field {
+  margin-bottom: 12px;
+}
+
+.config-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 4px;
+}
+
+.config-field input[type="text"] {
+  width: 100%;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.config-field input[type="text"]:focus {
+  outline: none;
+  border-color: #0080AF;
+  box-shadow: 0 0 0 2px rgba(0, 128, 175, 0.15);
+}
+
+/* Capability checklist */
+.config-cap-group {
+  margin-bottom: 8px;
+}
+
+.config-cap-group-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 8px 0 4px;
+}
+
+.config-cap-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.config-cap-item input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: #00C693;
+}
+
+.config-cap-item label {
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Weight overrides table */
+.config-weights-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.config-weights-table th {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.config-weights-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.config-weights-table input[type="number"] {
+  width: 60px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-align: right;
+}
+
+.config-weights-table .original-weight {
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 11px;
+}
+
+/* Data management buttons */
+.config-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.config-btn-action {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+}
+
+.config-btn-action:hover {
+  background: #f0f0f0;
+}
+
+.config-btn-action.danger {
+  color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.config-btn-action.danger:hover {
+  background: #fef0f0;
+}
+
+
+/* === poster.css === */
+/* Poster View — adapted from finops.org/framework poster layout */
+
+.poster {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.poster .grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 1280px) {
+  .poster .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Domain cards */
+.poster .domain-card {
+  background: #CCF4E9;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.poster .domain-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.poster .domain-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.92);
+  margin: 0;
+}
+
+.poster .domain-score {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.56);
+  background: rgba(255, 255, 255, 0.6);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.poster .domain-priority {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.poster .domain-priority select {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 1px 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  width: 40px;
+}
+
+.poster .domain-priority label {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.4);
+  font-weight: 500;
+}
+
+/* Capability cards within domains */
+.poster .capabilities-grid {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.poster .cap-card {
+  background: #fff;
+  border-radius: 6px;
+  min-width: 140px;
+  flex: 1 1 auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.poster .cap-card:hover {
+  border-color: #007758;
+}
+
+.poster .cap-card-inner {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.poster .cap-name {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.92);
+  flex: 1;
+}
+
+.poster .cap-score {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.56);
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.poster .cap-score.scored {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+/* Score bar fill behind capability card */
+.poster .cap-card {
+  position: relative;
+}
+
+.poster .cap-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 6px 0 0 6px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  z-index: 0;
+  opacity: 0.25;
+}
+
+/* Capability hidden/excluded state */
+.poster .cap-card.excluded {
+  opacity: 0.35;
+}
+
+.poster .cap-card.excluded .cap-bar {
+  display: none;
+}
+
+/* Overall score display */
+#overall-score-container {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding: 0 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.overall-score {
+  text-align: center;
+  padding: 12px 32px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.overall-score .label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.56);
+  margin-bottom: 4px;
+}
+
+.overall-score .value {
+  font-size: 28px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.overall-score .value.unscored {
+  color: rgb(200, 200, 200);
+}
+
+
+/* === print.css === */
+/* Print Styles */
+
+@media print {
+  /* Hide interactive elements */
+  #app-header nav,
+  .config-btn,
+  .config-panel,
+  .tab-btn,
+  .domain-priority select,
+  #tab-assess,
+  #validation-error,
+  footer a {
+    display: none !important;
+  }
+
+  /* Show all content */
+  #tab-results {
+    display: block !important;
+  }
+
+  /* Clean layout */
+  body {
+    margin: 0;
+    padding: 0;
+    font-size: 11pt;
+  }
+
+  #app-header {
+    background: none !important;
+    box-shadow: none !important;
+    border-bottom: 2px solid #0080AF;
+    padding: 8px 0;
+  }
+
+  .poster {
+    padding: 8px 0;
+  }
+
+  .poster .domain-card {
+    break-inside: avoid;
+  }
+
+  .poster .cap-card {
+    break-inside: avoid;
+  }
+
+  /* Footer attribution */
+  #app-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 9pt;
+    color: rgba(0, 0, 0, 0.5);
+    border-top: 1px solid #e0e0e0;
+    padding: 4px 0;
+  }
+
+  footer a {
+    display: inline !important;
+    color: rgba(0, 0, 0, 0.5) !important;
+    text-decoration: none !important;
+  }
+
+  /* Domain priority as static text */
+  .domain-priority-print {
+    display: inline !important;
+    font-size: 10pt;
+    color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Hide print-only elements on screen */
+.domain-priority-print {
+  display: none;
+}
+
+</style>
+</head>
+<body>
+  <div id="app">
+    <header id="app-header">
+      <div class="header-content">
+        <div class="header-titles">
+          <h1 id="assessment-title">FinOps Maturity Assessment</h1>
+          <p id="assessment-subtitle">Measure progress over time against accepted standards</p>
+        </div>
+        <nav class="header-nav">
+          <button class="tab-btn active" data-tab="results">Results</button>
+          <button class="tab-btn" data-tab="assess">Assess</button>
+          <button class="config-btn" aria-label="Configuration" title="Configuration">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M8.58 2.08a1.5 1.5 0 0 1 2.84 0l.36 1.08a1.5 1.5 0 0 0 1.91.91l1.08-.36a1.5 1.5 0 0 1 1.42 2.46l-.72.84a1.5 1.5 0 0 0 0 2l.72.84a1.5 1.5 0 0 1-1.42 2.46l-1.08-.36a1.5 1.5 0 0 0-1.91.91l-.36 1.08a1.5 1.5 0 0 1-2.84 0l-.36-1.08a1.5 1.5 0 0 0-1.91-.91l-1.08.36a1.5 1.5 0 0 1-1.42-2.46l.72-.84a1.5 1.5 0 0 0 0-2l-.72-.84A1.5 1.5 0 0 1 5.23 3.7l1.08.36a1.5 1.5 0 0 0 1.91-.91l.36-1.08ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <div id="validation-error" class="validation-error hidden"></div>
+
+    <main id="app-main">
+      <section id="tab-results" class="tab-content active">
+        <div id="poster-container"></div>
+        <div id="overall-score-container"></div>
+      </section>
+      <section id="tab-assess" class="tab-content hidden">
+        <div id="assess-container"></div>
+      </section>
+    </main>
+
+    <aside id="config-panel" class="config-panel hidden">
+      <div class="config-overlay"></div>
+      <div class="config-drawer">
+        <div class="config-header">
+          <h2>Configuration</h2>
+          <button class="config-close" aria-label="Close configuration">&times;</button>
+        </div>
+        <div id="config-content"></div>
+      </div>
+    </aside>
+
+    <footer id="app-footer">
+      <p>
+        <a href="https://www.finops.org/framework/" target="_blank" rel="noopener">FinOps Framework</a> by
+        <a href="https://www.finops.org/" target="_blank" rel="noopener">FinOps Foundation</a>
+      </p>
+    </footer>
+  </div>
+
+  <script id="spec-data" type="application/json">
+  {
+  "generatedAt": "2026-03-28T03:07:18.860672+00:00",
+  "generator": "finopspp",
+  "profile": {
+    "title": "FinOps Foundation"
+  },
+  "domains": [
+    {
+      "id": 1,
+      "title": "Manage the FinOps Practice",
+      "serialNumber": "001",
+      "capabilities": [
+        {
+          "id": 6,
+          "title": "Cloud Policy & Governance",
+          "serialNumber": "006",
+          "actions": [
+            {
+              "id": 102,
+              "title": "Draft Cloud Financial Policies",
+              "description": "",
+              "serialNumber": "102",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 103,
+              "title": "Publish Guidelines & Guardrails",
+              "description": "",
+              "serialNumber": "103",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 104,
+              "title": "Educate Stakeholders on Policy",
+              "description": "",
+              "serialNumber": "104",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 105,
+              "title": "Monitor Compliance & Report Breaches",
+              "description": "",
+              "serialNumber": "105",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Not monitored"
+                },
+                {
+                  "score": 2,
+                  "condition": "Reported"
+                },
+                {
+                  "score": 5,
+                  "condition": "Manual remediation"
+                },
+                {
+                  "score": 10,
+                  "condition": "Automated remediation"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 106,
+              "title": "Iterate Policies Based on Feedback",
+              "description": "",
+              "serialNumber": "106",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "title": "FinOps Assessment",
+          "serialNumber": "009",
+          "actions": [
+            {
+              "id": 113,
+              "title": "Define Assessment Scope & Goals",
+              "description": "",
+              "serialNumber": "113",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "0 items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "4 items completed"
+                }
+              ],
+              "formula": "* Select which teams or groups are in scope for the planned assessments\n* Select which capabilities/actions are in scope for each group's assessment\n* Select weights for each included action based on goals of the assessment and importance to the business\n* Set a preliminary target score for each included action to use for comparison\n\n10*Ceil(x/4)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 114,
+              "title": "Collect Standardized Assessment Inputs",
+              "description": "",
+              "serialNumber": "114",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "4 items completed"
+                }
+              ],
+              "formula": "* Use objective (not subjective) scoring metrics for assessment evaluation\n* Document how metrics used in the assessment are calculated and state all assumptions\n* Use the same calculation assumptions and formulas across scopes if possible\n* List relevant documentation of process and policy as evidentiary support for each score\n\n10*Ceil(x/4)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 115,
+              "title": "Establish Baselines & Identify Trends",
+              "description": "",
+              "serialNumber": "115",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 7,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "3 items completed"
+                }
+              ],
+              "formula": "* Complete an initial assessment for different scopes of the business to establish a baseline\n* Plot scores over time to track maturity progress for priority scopes\n* Complete analysis on what contributed to or hindered progress across scopes or different areas of the assessment\n\n10*Ceil(x/3)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 116,
+              "title": "Prioritize Actions & Publish Roadmap",
+              "description": "",
+              "serialNumber": "116",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "item 1 completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "items 1, and 2 completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "items 1, 2, and 3 completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "items 1, 2, 3, and 4 completed"
+                }
+              ],
+              "formula": "1. Invite subject matter experts (SMEs) and leadership to determine which gaps to address first\n2. Determine owners for addressing each of the prioritized gaps\n3. Owners will work with relevant teams to scope out how to meet the target score for each gap\n4. Work is then scheduled in a roadmap with deadlines that can be tracked at the leadership level",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 117,
+              "title": "Reassess Progress & Update Priorities",
+              "description": "",
+              "serialNumber": "117",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "4 items completed"
+                }
+              ],
+              "formula": "* Schedule a cadence to report progress outcomes to key stakeholders.\n* Create reporting to show progress on key outcomes across all maturity initiatives.\n* After successful outcomes are achieved, move on to the next prioritized item in the roadmap.\n* Periodically reevaluate the gap analysis and priority list based on lessons learned and new business goals.",
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "title": "FinOps Education & Enablement",
+          "serialNumber": "010",
+          "actions": [
+            {
+              "id": 97,
+              "title": "Assess Skills & Training Needs",
+              "description": "",
+              "serialNumber": "097",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 98,
+              "title": "Develop Role-Based Learning Content",
+              "description": "",
+              "serialNumber": "098",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 99,
+              "title": "Offer Certifications & Informal Learning",
+              "description": "",
+              "serialNumber": "099",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 100,
+              "title": "Leverage Vendor Training Resources",
+              "description": "",
+              "serialNumber": "100",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "2 items completed"
+                }
+              ],
+              "formula": "* Define process for reviewing asking for credits from CSPs\n* Define frequency of review, etc.\n\n10*Ceil(x/2)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 101,
+              "title": "Track Training Impact & Refresh Content",
+              "description": "",
+              "serialNumber": "101",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "title": "FinOps Practice Operations",
+          "serialNumber": "011",
+          "actions": [
+            {
+              "id": 91,
+              "title": "Define Org Model & Budget",
+              "description": "",
+              "serialNumber": "091",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Not done"
+                },
+                {
+                  "score": 10,
+                  "condition": "Defined"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 92,
+              "title": "Create Implementation Roadmap",
+              "description": "",
+              "serialNumber": "092",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 93,
+              "title": "Integrate Cost Data in Workflows",
+              "description": "",
+              "serialNumber": "093",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 94,
+              "title": "Publish FinOps KPIs",
+              "description": "",
+              "serialNumber": "094",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 95,
+              "title": "Drive Stakeholder Engagement",
+              "description": "",
+              "serialNumber": "095",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 96,
+              "title": "Automate Tasks & Review Maturity",
+              "description": "",
+              "serialNumber": "096",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "title": "FinOps Tools & Services",
+          "serialNumber": "012",
+          "actions": [
+            {
+              "id": 124,
+              "title": "Assess Tooling Needs & Criteria",
+              "description": "",
+              "serialNumber": "124",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 125,
+              "title": "Evaluate Build vs Buy Options",
+              "description": "",
+              "serialNumber": "125",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No rules established"
+                },
+                {
+                  "score": 10,
+                  "condition": "Published policy"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 126,
+              "title": "Implement & Configure Tools",
+              "description": "",
+              "serialNumber": "126",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 127,
+              "title": "Train Users & Integrate Data",
+              "description": "",
+              "serialNumber": "127",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 6,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "5 items completed"
+                }
+              ],
+              "formula": "* Define communication pathways between FinOps and the business\n* Conduct trainings or create videos\n* Send out period newsletters\n* CI/CD governance\n* Proactive recommendations at deployment\n\n10*Ceil(x/5)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 128,
+              "title": "Monitor Adoption & Iterate Tools",
+              "description": "",
+              "serialNumber": "128",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "title": "Intersecting Disciplines",
+          "serialNumber": "014",
+          "actions": [
+            {
+              "id": 129,
+              "title": "Establish Cross-Team Collab",
+              "description": "",
+              "serialNumber": "129",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 130,
+              "title": "Align Goals & Data Models",
+              "description": "",
+              "serialNumber": "130",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 131,
+              "title": "Share Reporting & Definitions",
+              "description": "",
+              "serialNumber": "131",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 132,
+              "title": "Provide Cloud Metrics to Teams",
+              "description": "",
+              "serialNumber": "132",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 133,
+              "title": "Coordinate Policy Changes Broadly",
+              "description": "",
+              "serialNumber": "133",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 134,
+              "title": "Drive Adoption & Resolve Conflicts",
+              "description": "",
+              "serialNumber": "134",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "title": "Invoicing & Chargeback",
+          "serialNumber": "015",
+          "actions": [
+            {
+              "id": 107,
+              "title": "Map Invoices to Allocation Model",
+              "description": "",
+              "serialNumber": "107",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 108,
+              "title": "Reconcile Rates & Track Completion",
+              "description": "",
+              "serialNumber": "108",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 109,
+              "title": "Design Chargeback with Finance",
+              "description": "",
+              "serialNumber": "109",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Not done"
+                },
+                {
+                  "score": 10,
+                  "condition": "Done and clearly defined"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 110,
+              "title": "Automate Chargeback Data Flows",
+              "description": "",
+              "serialNumber": "110",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 111,
+              "title": "Distribute Reports & Track Accuracy",
+              "description": "",
+              "serialNumber": "111",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 112,
+              "title": "Resolve Variances & Increase Coverage",
+              "description": "",
+              "serialNumber": "112",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Not done"
+                },
+                {
+                  "score": 10,
+                  "condition": "Defined"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "title": "Onboarding Workloads",
+          "serialNumber": "016",
+          "actions": [
+            {
+              "id": 118,
+              "title": "Create Workload Selection Criteria",
+              "description": "",
+              "serialNumber": "118",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 119,
+              "title": "Define Success Criteria & Scope",
+              "description": "",
+              "serialNumber": "119",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 120,
+              "title": "Enforce Tagging at Onboarding",
+              "description": "",
+              "serialNumber": "120",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 7,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "3 items completed"
+                }
+              ],
+              "formula": "* Process defined for new accounts and resources deployed\n* Train teams on process\n* Automate process\n\n10*Ceil(x/3)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 121,
+              "title": "Align Timelines with Budgets",
+              "description": "",
+              "serialNumber": "121",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 122,
+              "title": "Start with Lower Environments",
+              "description": "",
+              "serialNumber": "122",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 123,
+              "title": "Review Outcomes & Adjust Patterns",
+              "description": "",
+              "serialNumber": "123",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Optimize Usage & Cost",
+      "serialNumber": "002",
+      "capabilities": [
+        {
+          "id": 3,
+          "title": "Architecting for Cloud",
+          "serialNumber": "003",
+          "actions": [
+            {
+              "id": 61,
+              "title": "Establish Architecture Review Process",
+              "description": "",
+              "serialNumber": "061",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Does not exist"
+                },
+                {
+                  "score": 10,
+                  "condition": "Exists"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 62,
+              "title": "Assess Workloads for Modernization",
+              "description": "",
+              "serialNumber": "062",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 6,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "5 items completed"
+                }
+              ],
+              "formula": "* Define process to address notifications from CSPs\n* Define cadence for review\n* Define exception criteria\n* Define thresholds to change\n* Combine with architecture analysis for SP & RIs\n\n10*Ceil(x/5)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 63,
+              "title": "Estimate Trade-Offs & Document Cases",
+              "description": "",
+              "serialNumber": "063",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No documented method"
+                },
+                {
+                  "score": 10,
+                  "condition": "Documented method of assessing modernization efforts"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 64,
+              "title": "Implement Iteratively & Measure Results",
+              "description": "",
+              "serialNumber": "064",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 65,
+              "title": "Publish Benefits & Update References",
+              "description": "",
+              "serialNumber": "065",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 66,
+              "title": "Strengthen Architecture Collaboration",
+              "description": "",
+              "serialNumber": "066",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "title": "Cloud Sustainability",
+          "serialNumber": "007",
+          "actions": [
+            {
+              "id": 85,
+              "title": "Aggregate emissions data by region/service/account with lineage.",
+              "description": "",
+              "serialNumber": "085",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 86,
+              "title": "Define sustainability metrics/targets.",
+              "description": "",
+              "serialNumber": "086",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 87,
+              "title": "Include carbon impact in migration/optimization decisions and PRDs.",
+              "description": "",
+              "serialNumber": "087",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 88,
+              "title": "Enable engineering with carbon-aware data and scheduling guidance.",
+              "description": "",
+              "serialNumber": "088",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 89,
+              "title": "Continuously improve data quality and report progress on dashboards.",
+              "description": "",
+              "serialNumber": "089",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 90,
+              "title": "Tie sustainability wins to cost efficiency where possible.",
+              "description": "",
+              "serialNumber": "090",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "title": "Licensing & SaaS",
+          "serialNumber": "016",
+          "actions": [
+            {
+              "id": 73,
+              "title": "Inventory Licenses & Map Resources",
+              "description": "",
+              "serialNumber": "073",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "0%"
+                },
+                {
+                  "score": 1,
+                  "condition": "10%"
+                },
+                {
+                  "score": 2,
+                  "condition": "20%"
+                },
+                {
+                  "score": 3,
+                  "condition": "30%"
+                },
+                {
+                  "score": 4,
+                  "condition": "40%"
+                },
+                {
+                  "score": 5,
+                  "condition": "50%"
+                },
+                {
+                  "score": 6,
+                  "condition": "60%"
+                },
+                {
+                  "score": 7,
+                  "condition": "70%"
+                },
+                {
+                  "score": 8,
+                  "condition": "80%"
+                },
+                {
+                  "score": 9,
+                  "condition": "90%"
+                },
+                {
+                  "score": 10,
+                  "condition": "Near 100%"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 74,
+              "title": "Document Licensing Models",
+              "description": "",
+              "serialNumber": "074",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 75,
+              "title": "Integrate Billing with Procurement",
+              "description": "",
+              "serialNumber": "075",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 76,
+              "title": "Validate Utilization & Remediate",
+              "description": "",
+              "serialNumber": "076",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Not done"
+                },
+                {
+                  "score": 10,
+                  "condition": "Policy in place and published"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 77,
+              "title": "Influence Workload Design Choices",
+              "description": "",
+              "serialNumber": "077",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 78,
+              "title": "Publish License Spend & Utilization",
+              "description": "",
+              "serialNumber": "078",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "title": "Rate Optimization",
+          "serialNumber": "019",
+          "actions": [
+            {
+              "id": 79,
+              "title": "Document Commitment Strategy",
+              "description": "",
+              "serialNumber": "079",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Not done"
+                },
+                {
+                  "score": 10,
+                  "condition": "Policy in place and published"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 80,
+              "title": "Build Commitment Analysis Process",
+              "description": "",
+              "serialNumber": "080",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Not done"
+                },
+                {
+                  "score": 10,
+                  "condition": "Policy in place and published"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 81,
+              "title": "Purchase Commitments Regularly",
+              "description": "",
+              "serialNumber": "081",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 82,
+              "title": "Track ROI & Notify Owners",
+              "description": "",
+              "serialNumber": "082",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 83,
+              "title": "Allocate Upfront Costs Transparently",
+              "description": "",
+              "serialNumber": "083",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 84,
+              "title": "Leverage Spot & Negotiated Discounts",
+              "description": "",
+              "serialNumber": "084",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 6,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "5 items completed"
+                }
+              ],
+              "formula": "* Process for evaluating spot periodically\n* Tag for date last reviewed\n* New deployments get reviewed beforehand\n* Define requirements for spot\n* Have exception process and expiration date\n\n10*Ceil(x/5)",
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "title": "Workload Optimization",
+          "serialNumber": "022",
+          "actions": [
+            {
+              "id": 67,
+              "title": "Define Optimization Strategy",
+              "description": "",
+              "serialNumber": "067",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 68,
+              "title": "Inventory & Classify Workloads",
+              "description": "",
+              "serialNumber": "068",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No teardown/shutdown policy"
+                },
+                {
+                  "score": 3,
+                  "condition": "Published policy"
+                },
+                {
+                  "score": 6,
+                  "condition": "Classification tagged or otherwise identifiable"
+                },
+                {
+                  "score": 10,
+                  "condition": "Enforced Policy with tagged/identifiable classifications"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 69,
+              "title": "Collect Metrics & Identify Candidates",
+              "description": "",
+              "serialNumber": "069",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "0%"
+                },
+                {
+                  "score": 1,
+                  "condition": "10%"
+                },
+                {
+                  "score": 2,
+                  "condition": "20%"
+                },
+                {
+                  "score": 3,
+                  "condition": "30%"
+                },
+                {
+                  "score": 4,
+                  "condition": "40%"
+                },
+                {
+                  "score": 5,
+                  "condition": "50%"
+                },
+                {
+                  "score": 6,
+                  "condition": "60%"
+                },
+                {
+                  "score": 7,
+                  "condition": "70%"
+                },
+                {
+                  "score": 8,
+                  "condition": "80%"
+                },
+                {
+                  "score": 9,
+                  "condition": "90%"
+                },
+                {
+                  "score": 10,
+                  "condition": "Near 100%"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 70,
+              "title": "Partner on Scheduling Actions",
+              "description": "",
+              "serialNumber": "070",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 71,
+              "title": "Gamify Adoption & Celebrate Wins",
+              "description": "",
+              "serialNumber": "071",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 72,
+              "title": "Track KPIs & Document Playbooks",
+              "description": "",
+              "serialNumber": "072",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Quantify Business Value",
+      "serialNumber": "003",
+      "capabilities": [
+        {
+          "id": 4,
+          "title": "Benchmarking",
+          "serialNumber": "004",
+          "actions": [
+            {
+              "id": 49,
+              "title": "Select KPIs & Measurement Scope",
+              "description": "",
+              "serialNumber": "049",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 50,
+              "title": "Validate Tagging for Comparability",
+              "description": "",
+              "serialNumber": "050",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 51,
+              "title": "Choose Internal vs External Benchmarks",
+              "description": "",
+              "serialNumber": "051",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 52,
+              "title": "Stand Up Internal Benchmarking",
+              "description": "",
+              "serialNumber": "052",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 53,
+              "title": "Track Trends & Compare Over Time",
+              "description": "",
+              "serialNumber": "053",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No review of trends"
+                },
+                {
+                  "score": 3,
+                  "condition": "Manual review of trends"
+                },
+                {
+                  "score": 6,
+                  "condition": "Automated trend detection"
+                },
+                {
+                  "score": 10,
+                  "condition": "Manual review and automated trend detection"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 54,
+              "title": "Translate Gaps to Initiatives",
+              "description": "",
+              "serialNumber": "054",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "title": "Budgeting",
+          "serialNumber": "005",
+          "actions": [
+            {
+              "id": 43,
+              "title": "Define Budgeting Strategy",
+              "description": "",
+              "serialNumber": "043",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Does not exist"
+                },
+                {
+                  "score": 10,
+                  "condition": "Exists"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 44,
+              "title": "Integrate Rolling Forecasts",
+              "description": "",
+              "serialNumber": "044",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Does not exist"
+                },
+                {
+                  "score": 10,
+                  "condition": "Exists"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 45,
+              "title": "Increase Shared Cost Coverage",
+              "description": "",
+              "serialNumber": "045",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 46,
+              "title": "Publish Budget vs Actual Reports",
+              "description": "",
+              "serialNumber": "046",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 47,
+              "title": "Automate Budget Threshold Alerts",
+              "description": "",
+              "serialNumber": "047",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 48,
+              "title": "Review & Adapt Budget Strategy",
+              "description": "",
+              "serialNumber": "048",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "title": "Forecasting",
+          "serialNumber": "013",
+          "actions": [
+            {
+              "id": 37,
+              "title": "Establish Forecasting Approach",
+              "description": "",
+              "serialNumber": "037",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 38,
+              "title": "Collect Business Drivers Regularly",
+              "description": "",
+              "serialNumber": "038",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "4 items completed"
+                }
+              ],
+              "formula": "* Data based on existing patterns\n* Proactive investigations and interviews with teams\n* Proactive self reporting by the business and/or teams\n* 100% catch rate of spikes before they happen\n\n10*Ceil(x/4)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 39,
+              "title": "Run & Refresh Rolling Forecasts",
+              "description": "",
+              "serialNumber": "039",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "None"
+                },
+                {
+                  "score": 1,
+                  "condition": "Annual"
+                },
+                {
+                  "score": 2,
+                  "condition": "Quarterly"
+                },
+                {
+                  "score": 5,
+                  "condition": "Monthly"
+                },
+                {
+                  "score": 7,
+                  "condition": "Bi-Weekly"
+                },
+                {
+                  "score": 8,
+                  "condition": "Weekly"
+                },
+                {
+                  "score": 10,
+                  "condition": "Daily"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 40,
+              "title": "Compare Forecast to Actual",
+              "description": "",
+              "serialNumber": "040",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "0%"
+                },
+                {
+                  "score": 1,
+                  "condition": "10%"
+                },
+                {
+                  "score": 2,
+                  "condition": "20%"
+                },
+                {
+                  "score": 3,
+                  "condition": "30%"
+                },
+                {
+                  "score": 4,
+                  "condition": "40%"
+                },
+                {
+                  "score": 5,
+                  "condition": "50%"
+                },
+                {
+                  "score": 6,
+                  "condition": "60%"
+                },
+                {
+                  "score": 7,
+                  "condition": "70%"
+                },
+                {
+                  "score": 8,
+                  "condition": "80%"
+                },
+                {
+                  "score": 9,
+                  "condition": "90%"
+                },
+                {
+                  "score": 10,
+                  "condition": "Near 100%"
+                }
+              ],
+              "formula": "((Forecasted Public Cloud Spend \u2013 Actual Public Cloud Spend) / Forecasted Public Cloud Spend)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 41,
+              "title": "Automate Variance Alerts",
+              "description": "",
+              "serialNumber": "041",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No alerting"
+                },
+                {
+                  "score": 10,
+                  "condition": "Alerting exists"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 42,
+              "title": "Feed Learnings into Budgeting & Commitments",
+              "description": "",
+              "serialNumber": "042",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "4 items completed"
+                }
+              ],
+              "formula": "* Periodic review of budget vs forecast\n* Track when projects are forecasted to go over budget\n* Process to request more budget for projects going over\n* RCA to determine cause of budget over run\n\n10*Ceil(x/4)",
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "title": "Planning & Estimating",
+          "serialNumber": "018",
+          "actions": [
+            {
+              "id": 30,
+              "title": "Define Estimating Scope & Policy",
+              "description": "",
+              "serialNumber": "030",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 6,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "5 items completed"
+                }
+              ],
+              "formula": "* Defined scope of each project to be estimated\n* Developed list of known inputs to the project\n* Have a process to determine what may be missing from the inputs or scope\n* Have a policy review to determine additional needs for inputs or scope\n* For each component of the estimate, list all assumptions\n\n10*Ceil(x/5)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 31,
+              "title": "Agree on Pricing Assumptions",
+              "description": "",
+              "serialNumber": "031",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 6,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "5 items completed"
+                }
+              ],
+              "formula": "* Inventory possible commitment based discounts (RIs, Savings Plans, CUDs, etc.) available for deployed resources\n* Consider any private negotiated line item discounts vs public RI/CUD discounts\n* Set resource type standards to make use of spend commitments while maintaining needs of the business\n* Scenario plan commitment options versus potential changes in resources\n* Reference commit allocation strategy to calculate cost impact of shared scope vs private account commitments\n\n10*Ceil(x/5)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 32,
+              "title": "Select Estimation Methods",
+              "description": "",
+              "serialNumber": "032",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 6,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "5 items completed"
+                }
+              ],
+              "formula": "* Use pricing lists or pricing calculators to estimate workload spend\n* Run workloads as trial experiments to get baseline spend\n* Estimate workload costs based on similar applications already deployed in your environment\n* Determine fixed costs vs formulas for variable costs due to growth of workloads\n* Factor in discounts and uptime metrics to determine accurate spend vs list\n\n10*Ceil(x/5)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 33,
+              "title": "Include Sustainability Impacts",
+              "description": "",
+              "serialNumber": "033",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "item 1 completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "item 2 completed"
+                }
+              ],
+              "formula": "1. Calculate kg of carbon dioxide equivalents (kgCO2e), or similar, for new and ongoing workloads\n2. Compare carbon calculations with targets for new projects and overall consumption",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 34,
+              "title": "Establish Scenario Decision Process",
+              "description": "",
+              "serialNumber": "034",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 7,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "3 items completed"
+                }
+              ],
+              "formula": "* Define and follow process for gathering deployment plans from teams\n* Determine timeline for each new project to adjust the forecast during that time\n* Determine how optimizations and lower run rate will impact the forecast on a rolling basis\n\n10*Ceil(x/3)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 35,
+              "title": "Report Estimate Accuracy",
+              "description": "",
+              "serialNumber": "035",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "0%"
+                },
+                {
+                  "score": 1,
+                  "condition": "10%"
+                },
+                {
+                  "score": 2,
+                  "condition": "20%"
+                },
+                {
+                  "score": 3,
+                  "condition": "30%"
+                },
+                {
+                  "score": 4,
+                  "condition": "40%"
+                },
+                {
+                  "score": 5,
+                  "condition": "50%"
+                },
+                {
+                  "score": 6,
+                  "condition": "60%"
+                },
+                {
+                  "score": 7,
+                  "condition": "70%"
+                },
+                {
+                  "score": 8,
+                  "condition": "80%"
+                },
+                {
+                  "score": 9,
+                  "condition": "90%"
+                },
+                {
+                  "score": 10,
+                  "condition": "Near 100%"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 36,
+              "title": "Coach Engineering on Estimates",
+              "description": "",
+              "serialNumber": "036",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "4 items completed"
+                }
+              ],
+              "formula": "* Refer teams to Documented Estimating Scope & Policy and include these methods in trainings\n* Teams track baseline spend for resources they own, and share changes to baseline with leadership\n* Teams will share updates about their change in usage of shared resources and dependencies\n* Track team adoption of better estimates via KPIs around baseline or plan vs actuals\n\n10*Ceil(x/4)",
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "title": "Unit Economics",
+          "serialNumber": "021",
+          "actions": [
+            {
+              "id": 55,
+              "title": "Define Business-Relevant Units",
+              "description": "",
+              "serialNumber": "055",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "4 items completed"
+                }
+              ],
+              "formula": "* Define cost drivers from finance/business\n* Gather metrics on a cadence\n* Set goals/targets\n* Set up forecasting and anomaly detection on units\n\n10*Ceil(x/4)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 56,
+              "title": "Document Inputs & Formulas",
+              "description": "",
+              "serialNumber": "056",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 57,
+              "title": "Build Unit Cost Dashboards",
+              "description": "",
+              "serialNumber": "057",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 58,
+              "title": "Set Review Cadence & Targets",
+              "description": "",
+              "serialNumber": "058",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 59,
+              "title": "Use Metrics to Prioritize Investments",
+              "description": "",
+              "serialNumber": "059",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 60,
+              "title": "Communicate Unit Cost Wins",
+              "description": "",
+              "serialNumber": "060",
+              "weight": 1.0,
+              "scoreType": "binary",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "None"
+                },
+                {
+                  "score": 10,
+                  "condition": "communicates wins in KPI thresholds and unit costs"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Understand Usage & Cost",
+      "serialNumber": "004",
+      "capabilities": [
+        {
+          "id": 1,
+          "title": "Allocation",
+          "serialNumber": "001",
+          "actions": [
+            {
+              "id": 9,
+              "title": "Define Metadata & Hierarchy Strategy",
+              "description": "",
+              "serialNumber": "009",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "2 items completed"
+                }
+              ],
+              "formula": "Increasing Granularity and Visibility\n\n* Define metadata to track (org, dept, cost center, team, app, etc.)\n* Create the hierarchy for each category of metadata (ex teams per dept, cost centers in an org)\n\n10*Ceil(x/2)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 10,
+              "title": "Identify Shared Costs & Rules",
+              "description": "",
+              "serialNumber": "010",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "0%"
+                },
+                {
+                  "score": 1,
+                  "condition": "10%"
+                },
+                {
+                  "score": 2,
+                  "condition": "20%"
+                },
+                {
+                  "score": 3,
+                  "condition": "30%"
+                },
+                {
+                  "score": 4,
+                  "condition": "40%"
+                },
+                {
+                  "score": 5,
+                  "condition": "50%"
+                },
+                {
+                  "score": 6,
+                  "condition": "60%"
+                },
+                {
+                  "score": 7,
+                  "condition": "70%"
+                },
+                {
+                  "score": 8,
+                  "condition": "80% "
+                },
+                {
+                  "score": 9,
+                  "condition": "90%"
+                },
+                {
+                  "score": 10,
+                  "condition": "Near 100%"
+                }
+              ],
+              "formula": "Unallocated Shared CSP Effective Cloud Cost/ Total CSP Effective Cloud Cost",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 11,
+              "title": "Publish Allocation Taxonomy",
+              "description": "",
+              "serialNumber": "011",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "1 item  completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "2 items completed"
+                }
+              ],
+              "formula": "Increasing Granularity and Visibility\n\n* Document as part of tagging strategy and enforcement\n* Teams have visibility into where their resources fit into the hierarchy\n\n10*Ceil(x/2)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 12,
+              "title": "Implement Tagging Standards",
+              "description": "",
+              "serialNumber": "012",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "0%"
+                },
+                {
+                  "score": 1,
+                  "condition": "10%"
+                },
+                {
+                  "score": 2,
+                  "condition": "20%"
+                },
+                {
+                  "score": 3,
+                  "condition": "30%"
+                },
+                {
+                  "score": 4,
+                  "condition": "40%"
+                },
+                {
+                  "score": 5,
+                  "condition": "50%"
+                },
+                {
+                  "score": 6,
+                  "condition": "60%"
+                },
+                {
+                  "score": 7,
+                  "condition": "70%"
+                },
+                {
+                  "score": 8,
+                  "condition": "80%"
+                },
+                {
+                  "score": 9,
+                  "condition": "90%"
+                },
+                {
+                  "score": 10,
+                  "condition": "Near 100%"
+                }
+              ],
+              "formula": "Percentage of total costs that are tagged for Each Required Tag",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 13,
+              "title": "Validate Compliance & Report Gaps",
+              "description": "",
+              "serialNumber": "013",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "0%"
+                },
+                {
+                  "score": 1,
+                  "condition": "10%"
+                },
+                {
+                  "score": 2,
+                  "condition": "20%"
+                },
+                {
+                  "score": 3,
+                  "condition": "30%"
+                },
+                {
+                  "score": 4,
+                  "condition": "40%"
+                },
+                {
+                  "score": 5,
+                  "condition": "50%"
+                },
+                {
+                  "score": 6,
+                  "condition": "60%"
+                },
+                {
+                  "score": 7,
+                  "condition": "70%"
+                },
+                {
+                  "score": 8,
+                  "condition": "80%"
+                },
+                {
+                  "score": 9,
+                  "condition": "90%"
+                },
+                {
+                  "score": 10,
+                  "condition": "Near 100%"
+                }
+              ],
+              "formula": "x = Total Effective Costs Associated with Unallocated CSP Cloud Resources During\ny = Total CSP Cloud Costs During a Period of Time\n\nx / y\n",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 14,
+              "title": "Automate Tagging & Enforcement",
+              "description": "",
+              "serialNumber": "014",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "4 items completed"
+                }
+              ],
+              "formula": "Effectiveness/Effort by strategy\n\n* Manually asking teams to tag resources\n* Remove untagged resources after time threshold\n* Block deployments without proper tags\n* Automatically tag based on CI/CD creator and team\n\n10*Ceil(x/4)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 15,
+              "title": "Iterate Strategies & Communicate",
+              "description": "",
+              "serialNumber": "015",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Anomaly Management",
+          "serialNumber": "002",
+          "actions": [
+            {
+              "id": 23,
+              "title": "Configure Cost Spike Detection",
+              "description": "",
+              "serialNumber": "023",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 6,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "5 items completed"
+                }
+              ],
+              "formula": "* Manual inspection of spikes\n* Out-of-the-box tool based anomaly alerts\n* Custom simple increase alert calculations\n* Custom alerts per business unit, team, etc.\n* Alerts per unit costs above thresholds\n\n10*Ceil(x/5)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 24,
+              "title": "Define Severity & Response SLAs",
+              "description": "",
+              "serialNumber": "024",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 7,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 9,
+                  "condition": "5 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "6 items completed"
+                }
+              ],
+              "formula": "* Defined severity tiers\n* Thresholds associated with severity tiers are defined\n* Defined and adhered to response SLAs\n* Published response runbooks\n* Runbook percent successful or completed\n* RCA completed after alerts\n\n10*Ceil(x/6)\n",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 25,
+              "title": "Automate Alert Routing",
+              "description": "",
+              "serialNumber": "025",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No alerting to any owners"
+                },
+                {
+                  "score": 1,
+                  "condition": "Alerting in at least one owner"
+                },
+                {
+                  "score": 3,
+                  "condition": "Alerting to some owners [>20%]"
+                },
+                {
+                  "score": 6,
+                  "condition": "Alerting to most owners [>60%]"
+                },
+                {
+                  "score": 10,
+                  "condition": "Alerting to all owners [100%]"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 26,
+              "title": "Record Anomaly Context & Timeline",
+              "description": "",
+              "serialNumber": "026",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 27,
+              "title": "Analyze Root Causes & Fix Issues",
+              "description": "",
+              "serialNumber": "027",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 28,
+              "title": "Track Metrics & Avoidance Rates",
+              "description": "",
+              "serialNumber": "028",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 4,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 7,
+                  "condition": "5 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "6 items completed"
+                },
+                {
+                  "score": 9,
+                  "condition": "7 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "8 items completed"
+                }
+              ],
+              "formula": "* Number of detections per time period\n* Number of detections over threshold\n* Time to send notifications to stakeholders\n* Time to validate anomaly\n* Resolution Time/SLA adherence\n* False positive rate\n* Cost Avoidance due to detection\n* Percent anomalies addressed\n\n10*Ceil(x/8)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 29,
+              "title": "Tune Thresholds to Reduce Noise",
+              "description": "",
+              "serialNumber": "029",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "title": "Data Ingestion",
+          "serialNumber": "008",
+          "actions": [
+            {
+              "id": 1,
+              "title": "Inventory All Data Sources",
+              "description": "",
+              "serialNumber": "001",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 2,
+              "title": "Choose Data Landing Tooling",
+              "description": "",
+              "serialNumber": "002",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 3,
+              "title": "Create Landing Zones & Controls",
+              "description": "",
+              "serialNumber": "003",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 4,
+              "title": "Define Data Granularity & Frequency",
+              "description": "",
+              "serialNumber": "004",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Never"
+                },
+                {
+                  "score": 1,
+                  "condition": "Monthly or greater"
+                },
+                {
+                  "score": 2,
+                  "condition": "More than a week"
+                },
+                {
+                  "score": 3,
+                  "condition": "7 days"
+                },
+                {
+                  "score": 4,
+                  "condition": "5 days"
+                },
+                {
+                  "score": 6,
+                  "condition": "2 days"
+                },
+                {
+                  "score": 8,
+                  "condition": "1 day"
+                },
+                {
+                  "score": 10,
+                  "condition": "Instant"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 5,
+              "title": "Document Normalization Rules",
+              "description": "",
+              "serialNumber": "005",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 6,
+              "title": "Implement Data Quality Checks",
+              "description": "",
+              "serialNumber": "006",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 6,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "5 items completed"
+                },
+                {
+                  "score": 9,
+                  "condition": "6 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "7 items completed"
+                }
+              ],
+              "formula": "* Define data quality (complete, valid, etc.)\n* Manual quality checks\n* Automated checks (null % on required fields/tags)\n* Response process and triage defined\n* SLAs defined and monitored\n* Integrate with communication and alerting tools\n* Integrate into CI/CD pipelines\n\n10*Ceil(x/7)\n",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 7,
+              "title": "Build Ingestion Anomaly Dashboards",
+              "description": "",
+              "serialNumber": "007",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 2,
+                  "condition": "1 items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 6,
+                  "condition": "4 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "5 items completed"
+                },
+                {
+                  "score": 9,
+                  "condition": "6 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "7 items completed"
+                }
+              ],
+              "formula": "Not in order, gain points for each task\n\n* Manual or basic logs\n* Define key metrics (failures, latency, etc.)\n* Static Dashboard updated manually\n* Automated alerts for failures\n* Integrate with communication and alerting tools\n* Define Process & SLAs:RCAs completed for each\n* Tune out false positives\n\n10*Ceil(x/7)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 8,
+              "title": "Optimize Pipelines for Timeliness",
+              "description": "",
+              "serialNumber": "008",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 135,
+              "title": "Define ingestion frequency; include mandatory metadata.",
+              "description": "",
+              "serialNumber": "135",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "Never"
+                },
+                {
+                  "score": 1,
+                  "condition": "Monthly or greater"
+                },
+                {
+                  "score": 2,
+                  "condition": "More than a week"
+                },
+                {
+                  "score": 3,
+                  "condition": "7 days"
+                },
+                {
+                  "score": 4,
+                  "condition": "5 days"
+                },
+                {
+                  "score": 6,
+                  "condition": "2 days"
+                },
+                {
+                  "score": 8,
+                  "condition": "1 day"
+                },
+                {
+                  "score": 10,
+                  "condition": "Instant"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "title": "Reporting & Analytics",
+          "serialNumber": "020",
+          "actions": [
+            {
+              "id": 16,
+              "title": "Gather Requirements & Define KPIs",
+              "description": "",
+              "serialNumber": "016",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 17,
+              "title": "Enrich Billing with Business Logic",
+              "description": "",
+              "serialNumber": "017",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "4 items completed"
+                }
+              ],
+              "formula": "* Manual adjustments to invoices and teams\n* Define Business Rules for sharing discounts, RI/SP, etc.\n* Automate adjustment calculations monthly in arrears\n* Automate mappings into reporting platform for realtime adjustments\n\n10*Ceil(x/4)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 18,
+              "title": "Build Dashboards for All Views",
+              "description": "",
+              "serialNumber": "018",
+              "weight": 1.0,
+              "scoreType": "bucket",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No items completed"
+                },
+                {
+                  "score": 3,
+                  "condition": "1 item completed"
+                },
+                {
+                  "score": 5,
+                  "condition": "2 items completed"
+                },
+                {
+                  "score": 8,
+                  "condition": "3 items completed"
+                },
+                {
+                  "score": 10,
+                  "condition": "4 items completed"
+                }
+              ],
+              "formula": "* Dashboard for showback\n* Dashboard where teams can dive in to investigate costs\n* Ad-hoc dashboards available to teams\n* Dashboards for key metrics tracking (tagging, waste, etc.)\n\n10*Ceil(x/4)",
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 19,
+              "title": "Publish Documentation & Support",
+              "description": "",
+              "serialNumber": "019",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 20,
+              "title": "Embed Reports in Workflows",
+              "description": "",
+              "serialNumber": "020",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": "No alerting in workflow tools"
+                },
+                {
+                  "score": 1,
+                  "condition": "Alerting in at least one tool"
+                },
+                {
+                  "score": 3,
+                  "condition": "Alerting in some tooling [>20%]"
+                },
+                {
+                  "score": 6,
+                  "condition": "Alerting in most tooling [>60%]"
+                },
+                {
+                  "score": 10,
+                  "condition": "Alerting in all workflow tools [100%]"
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 21,
+              "title": "Track Adoption & Manage Changes",
+              "description": "",
+              "serialNumber": "021",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            },
+            {
+              "id": 22,
+              "title": "Iterate Based on Feedback",
+              "description": "",
+              "serialNumber": "022",
+              "weight": 1.0,
+              "scoreType": "linear",
+              "scoring": [
+                {
+                  "score": 0,
+                  "condition": null
+                }
+              ],
+              "formula": null,
+              "references": [],
+              "supplementalGuidance": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+  </script>
+
+  <script>
+/* === scoring.js === */
+/* Scoring Engine — replicates finopspp Python scoring logic */
+
+const Scoring = (() => {
+  function getScoreColor(score) {
+    if (score === null || score === undefined) return 'rgb(200, 200, 200)';
+    if (score >= 7.5) return 'rgb(0, 198, 147)';
+    if (score >= 5.0) return 'rgb(0, 150, 100)';
+    if (score >= 2.5) return 'rgb(0, 100, 50)';
+    return 'rgb(100, 100, 100)';
+  }
+
+  function computeActionScore(action, response) {
+    if (response === null || response === undefined) return null;
+
+    switch (action.scoreType) {
+      case 'binary':
+        return typeof response === 'number' ? response : null;
+
+      case 'bucket': {
+        if (!Array.isArray(response)) return null;
+        const checkedCount = response.filter(Boolean).length;
+        const items = parseBucketItems(action.formula);
+        const totalItems = items.length;
+        if (totalItems === 0) return null;
+        return 10 * Math.ceil(checkedCount / totalItems);
+      }
+
+      case 'linear':
+        return typeof response === 'number' ? response : null;
+
+      case 'value':
+        return typeof response === 'number' ? response : null;
+
+      default:
+        return null;
+    }
+  }
+
+  function parseBucketItems(formula) {
+    if (!formula) return [];
+    return formula.split('\n')
+      .filter(line => line.trim().startsWith('*'))
+      .map(line => line.trim().replace(/^\*\s*/, ''));
+  }
+
+  function computeCapabilityScore(capability, responses, config) {
+    let weightedSum = 0;
+    let totalWeight = 0;
+
+    for (const action of capability.actions) {
+      const weight = getEffectiveWeight(action, config);
+      if (weight <= 0) continue;
+
+      const response = responses[action.id];
+      const score = computeActionScore(action, response);
+      if (score === null) continue;
+
+      weightedSum += score * weight;
+      totalWeight += weight;
+    }
+
+    return totalWeight > 0 ? weightedSum / totalWeight : null;
+  }
+
+  function computeDomainScore(domain, responses, config) {
+    let sum = 0;
+    let count = 0;
+
+    for (const cap of domain.capabilities) {
+      if (isCapabilityHidden(cap, config)) continue;
+
+      const score = computeCapabilityScore(cap, responses, config);
+      if (score === null) continue;
+
+      sum += score;
+      count++;
+    }
+
+    return count > 0 ? sum / count : null;
+  }
+
+  function computeOverallScore(domains, responses, config) {
+    let sum = 0;
+    let count = 0;
+
+    for (const domain of domains) {
+      const score = computeDomainScore(domain, responses, config);
+      if (score === null) continue;
+
+      sum += score;
+      count++;
+    }
+
+    return count > 0 ? sum / count : null;
+  }
+
+  function getEffectiveWeight(action, config) {
+    if (config && config.weights && config.weights[action.id] !== undefined) {
+      return config.weights[action.id];
+    }
+    return action.weight;
+  }
+
+  function isCapabilityHidden(capability, config) {
+    if (config && config.hiddenCapabilities) {
+      return config.hiddenCapabilities.includes(capability.id);
+    }
+    return false;
+  }
+
+  function formatScore(score) {
+    if (score === null || score === undefined) return '—';
+    return score.toFixed(1);
+  }
+
+  function computeAllScores(specData, responses, config) {
+    const result = { domains: [], overall: null };
+
+    for (const domain of specData.domains) {
+      const domainResult = {
+        id: domain.id,
+        title: domain.title,
+        score: computeDomainScore(domain, responses, config),
+        capabilities: []
+      };
+
+      for (const cap of domain.capabilities) {
+        const hidden = isCapabilityHidden(cap, config);
+        const capResult = {
+          id: cap.id,
+          title: cap.title,
+          score: hidden ? null : computeCapabilityScore(cap, responses, config),
+          hidden: hidden,
+          actions: []
+        };
+
+        for (const action of cap.actions) {
+          const weight = getEffectiveWeight(action, config);
+          const response = responses[action.id];
+          capResult.actions.push({
+            id: action.id,
+            title: action.title,
+            score: weight > 0 ? computeActionScore(action, response) : null,
+            weight: weight,
+            responded: response !== null && response !== undefined
+          });
+        }
+
+        domainResult.capabilities.push(capResult);
+      }
+
+      result.domains.push(domainResult);
+    }
+
+    result.overall = computeOverallScore(specData.domains, responses, config);
+    return result;
+  }
+
+  return {
+    getScoreColor,
+    computeActionScore,
+    parseBucketItems,
+    computeCapabilityScore,
+    computeDomainScore,
+    computeOverallScore,
+    getEffectiveWeight,
+    isCapabilityHidden,
+    formatScore,
+    computeAllScores
+  };
+})();
+
+
+/* === storage.js === */
+/* Persistence — localStorage auto-save, JSON export/import, Save As HTML */
+
+const Storage = (() => {
+  const STORAGE_KEY = 'finops-assessment-state';
+
+  function save(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn('Failed to save to localStorage:', e);
+    }
+  }
+
+  function load(specData) {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        return {
+          responses: saved.responses || {},
+          config: saved.config || {},
+          priorities: saved.priorities || {}
+        };
+      }
+    } catch (e) {
+      console.warn('Failed to load from localStorage:', e);
+    }
+    return { responses: {}, config: {}, priorities: {} };
+  }
+
+  function exportJSON() {
+    const state = App.getState();
+    const data = {
+      exportedAt: new Date().toISOString(),
+      version: '1.0',
+      ...state
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    downloadBlob(blob, generateFilename('json'));
+  }
+
+  function importJSON() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const data = JSON.parse(evt.target.result);
+          const newState = {
+            responses: data.responses || {},
+            config: data.config || {},
+            priorities: data.priorities || {}
+          };
+          App.setState(newState);
+        } catch (err) {
+          alert('Failed to import: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+    input.click();
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function generateFilename(ext) {
+    const state = App.getState();
+    const title = (state.config.title || 'FinOps Maturity Assessment').replace(/[^a-zA-Z0-9 ]/g, '');
+    const date = new Date().toISOString().split('T')[0];
+    return `${title} - ${date}.${ext}`;
+  }
+
+  return { save, load, exportJSON, importJSON, downloadBlob, generateFilename };
+})();
+
+
+/* === poster.js === */
+/* Poster View — render domains/capabilities with score overlays */
+
+const Poster = (() => {
+  function render(specData, state) {
+    const container = document.getElementById('poster-container');
+    if (!container) return;
+
+    let html = '<div class="poster"><div class="grid-2">';
+
+    for (const domain of specData.domains) {
+      const priority = (state.priorities && state.priorities[domain.id]) || '';
+
+      html += `<div class="domain-card" data-domain-id="${domain.id}">`;
+      html += `<div class="domain-header">`;
+      html += `<h3 class="domain-title">${esc(domain.title)}</h3>`;
+      html += `<span class="domain-score" data-domain-score="${domain.id}">—</span>`;
+      html += `<span class="domain-priority">`;
+      html += `<label>Priority</label>`;
+      html += `<select data-domain-priority="${domain.id}" aria-label="Priority for ${esc(domain.title)}">`;
+      html += `<option value="">—</option>`;
+      for (let i = 1; i <= 4; i++) {
+        const sel = (priority == i) ? ' selected' : '';
+        html += `<option value="${i}"${sel}>${i}</option>`;
+      }
+      html += `</select>`;
+      html += `<span class="domain-priority-print">#${priority || '—'}</span>`;
+      html += `</span>`;
+      html += `</div>`;
+
+      html += `<div class="capabilities-grid">`;
+      for (const cap of domain.capabilities) {
+        const hidden = Scoring.isCapabilityHidden(cap, state.config);
+        const cls = hidden ? ' excluded' : '';
+        html += `<div class="cap-card${cls}" data-cap-id="${cap.id}">`;
+        html += `<div class="cap-bar" data-cap-bar="${cap.id}"></div>`;
+        html += `<div class="cap-card-inner">`;
+        html += `<span class="cap-name">${esc(cap.title)}</span>`;
+        html += `<span class="cap-score" data-cap-score="${cap.id}">—</span>`;
+        html += `</div></div>`;
+      }
+      html += `</div></div>`;
+    }
+
+    html += '</div></div>';
+    container.innerHTML = html;
+
+    // Render overall score
+    const overallContainer = document.getElementById('overall-score-container');
+    if (overallContainer) {
+      overallContainer.innerHTML = `
+        <div class="overall-score">
+          <div class="label">Overall Score</div>
+          <div class="value unscored" id="overall-score-value">—</div>
+        </div>`;
+    }
+
+    // Bind priority dropdowns
+    container.querySelectorAll('[data-domain-priority]').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        const domainId = parseInt(e.target.dataset.domainPriority);
+        const rank = e.target.value ? parseInt(e.target.value) : null;
+        App.setPriority(domainId, rank);
+        // Update print text
+        const printSpan = e.target.parentElement.querySelector('.domain-priority-print');
+        if (printSpan) printSpan.textContent = '#' + (rank || '—');
+      });
+    });
+  }
+
+  function update(scores, state) {
+    // Update domain scores
+    for (const domain of scores.domains) {
+      const el = document.querySelector(`[data-domain-score="${domain.id}"]`);
+      if (el) {
+        el.textContent = Scoring.formatScore(domain.score);
+        el.style.color = domain.score !== null ? Scoring.getScoreColor(domain.score) : '';
+      }
+
+      // Update capability scores and bars
+      for (const cap of domain.capabilities) {
+        const scoreEl = document.querySelector(`[data-cap-score="${cap.id}"]`);
+        if (scoreEl) {
+          scoreEl.textContent = Scoring.formatScore(cap.score);
+          if (cap.score !== null) {
+            scoreEl.classList.add('scored');
+          } else {
+            scoreEl.classList.remove('scored');
+          }
+        }
+
+        const barEl = document.querySelector(`[data-cap-bar="${cap.id}"]`);
+        if (barEl) {
+          if (cap.score !== null && !cap.hidden) {
+            barEl.style.width = (cap.score * 10) + '%';
+            barEl.style.backgroundColor = Scoring.getScoreColor(cap.score);
+          } else {
+            barEl.style.width = '0%';
+          }
+        }
+
+        const cardEl = document.querySelector(`[data-cap-id="${cap.id}"]`);
+        if (cardEl) {
+          if (cap.hidden) {
+            cardEl.classList.add('excluded');
+          } else {
+            cardEl.classList.remove('excluded');
+          }
+        }
+      }
+    }
+
+    // Update overall score
+    const overallEl = document.getElementById('overall-score-value');
+    if (overallEl) {
+      overallEl.textContent = Scoring.formatScore(scores.overall);
+      if (scores.overall !== null) {
+        overallEl.classList.remove('unscored');
+        overallEl.style.color = Scoring.getScoreColor(scores.overall);
+      } else {
+        overallEl.classList.add('unscored');
+        overallEl.style.color = '';
+      }
+    }
+  }
+
+  function esc(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  return { render, update };
+})();
+
+
+/* === assess.js === */
+/* Assess Tab — render questionnaire, handle input by score type */
+
+const Assess = (() => {
+  function render(specData, state) {
+    const container = document.getElementById('assess-container');
+    if (!container) return;
+
+    let html = '';
+
+    for (const domain of specData.domains) {
+      html += `<div class="assess-domain" data-assess-domain="${domain.id}">`;
+      html += `<h2 class="assess-domain-header">${esc(domain.title)}`;
+      html += `<span class="assess-domain-progress" data-domain-progress="${domain.id}"></span>`;
+      html += `</h2>`;
+
+      for (const cap of domain.capabilities) {
+        const hidden = Scoring.isCapabilityHidden(cap, state.config);
+        if (hidden) continue;
+
+        html += `<div class="assess-capability" data-assess-cap="${cap.id}">`;
+        html += `<div class="assess-cap-header">`;
+        html += `<h3 class="assess-cap-title">${esc(cap.title)}</h3>`;
+        html += `<span class="assess-cap-progress" data-cap-progress="${cap.id}"></span>`;
+        html += `</div>`;
+
+        for (const action of cap.actions) {
+          const weight = Scoring.getEffectiveWeight(action, state.config);
+          if (weight <= 0) continue;
+
+          const response = state.responses[action.id];
+          const answered = response !== null && response !== undefined;
+
+          html += `<div class="assess-action${answered ? ' answered' : ''}" data-assess-action="${action.id}">`;
+          html += `<div class="assess-action-title">${esc(action.title)}</div>`;
+          if (action.description) {
+            html += `<div class="assess-action-desc">${esc(action.description)}</div>`;
+          }
+          html += `<div class="assess-action-score" data-action-score="${action.id}">—</div>`;
+          html += renderInput(action, response);
+          html += `</div>`;
+        }
+
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+    }
+
+    container.innerHTML = html;
+    bindInputs(specData);
+  }
+
+  function renderInput(action, response) {
+    switch (action.scoreType) {
+      case 'binary':
+        return renderBinary(action, response);
+      case 'bucket':
+        return renderBucket(action, response);
+      case 'linear':
+        return renderLinear(action, response);
+      case 'value':
+        return renderValue(action, response);
+      default:
+        return '<div>Unknown score type</div>';
+    }
+  }
+
+  function renderBinary(action, response) {
+    let html = `<div class="assess-binary" data-input-action="${action.id}" data-score-type="binary">`;
+    for (const opt of action.scoring) {
+      const checked = response === opt.score ? ' checked' : '';
+      html += `<label>`;
+      html += `<input type="radio" name="action-${action.id}" value="${opt.score}"${checked}>`;
+      html += `${esc(opt.condition)}`;
+      html += `</label>`;
+    }
+    html += `</div>`;
+    return html;
+  }
+
+  function renderBucket(action, response) {
+    const items = Scoring.parseBucketItems(action.formula);
+    const checked = Array.isArray(response) ? response : [];
+
+    let html = `<div class="assess-bucket" data-input-action="${action.id}" data-score-type="bucket">`;
+    items.forEach((item, i) => {
+      const isChecked = checked[i] ? ' checked' : '';
+      html += `<label>`;
+      html += `<input type="checkbox" data-index="${i}"${isChecked}>`;
+      html += `${esc(item)}`;
+      html += `</label>`;
+    });
+    html += `</div>`;
+    return html;
+  }
+
+  function renderLinear(action, response) {
+    let html = `<div class="assess-linear" data-input-action="${action.id}" data-score-type="linear">`;
+    for (const opt of action.scoring) {
+      const checked = response === opt.score ? ' checked' : '';
+      html += `<label>`;
+      html += `<input type="radio" name="action-${action.id}" value="${opt.score}"${checked}>`;
+      html += `${esc(opt.condition)} (${opt.score})`;
+      html += `</label>`;
+    }
+    html += `</div>`;
+    return html;
+  }
+
+  function renderValue(action, response) {
+    let html = `<div class="assess-value" data-input-action="${action.id}" data-score-type="value">`;
+    html += `<select>`;
+    html += `<option value="">Select...</option>`;
+    for (const opt of action.scoring) {
+      const selected = response === opt.score ? ' selected' : '';
+      html += `<option value="${opt.score}"${selected}>${esc(opt.condition)} (${opt.score})</option>`;
+    }
+    html += `</select>`;
+    html += `</div>`;
+    return html;
+  }
+
+  function bindInputs(specData) {
+    // Binary and linear (radio)
+    document.querySelectorAll('[data-score-type="binary"], [data-score-type="linear"]').forEach(div => {
+      div.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          const actionId = parseInt(div.dataset.inputAction);
+          App.setResponse(actionId, parseInt(radio.value));
+          div.closest('.assess-action').classList.add('answered');
+        });
+      });
+    });
+
+    // Bucket (checkboxes)
+    document.querySelectorAll('[data-score-type="bucket"]').forEach(div => {
+      const actionId = parseInt(div.dataset.inputAction);
+      div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const checks = [];
+          div.querySelectorAll('input[type="checkbox"]').forEach(c => {
+            checks[parseInt(c.dataset.index)] = c.checked;
+          });
+          App.setResponse(actionId, checks);
+          const any = checks.some(Boolean);
+          div.closest('.assess-action').classList.toggle('answered', any);
+        });
+      });
+    });
+
+    // Value (select)
+    document.querySelectorAll('[data-score-type="value"]').forEach(div => {
+      div.querySelector('select').addEventListener('change', (e) => {
+        const actionId = parseInt(div.dataset.inputAction);
+        const val = e.target.value ? parseInt(e.target.value) : null;
+        App.setResponse(actionId, val);
+        div.closest('.assess-action').classList.toggle('answered', val !== null);
+      });
+    });
+  }
+
+  function updateScores(scores) {
+    for (const domain of scores.domains) {
+      // Domain progress
+      const domainProg = document.querySelector(`[data-domain-progress="${domain.id}"]`);
+      if (domainProg) {
+        let answered = 0, total = 0;
+        for (const cap of domain.capabilities) {
+          if (cap.hidden) continue;
+          for (const action of cap.actions) {
+            if (action.weight > 0) {
+              total++;
+              if (action.responded) answered++;
+            }
+          }
+        }
+        domainProg.textContent = total > 0 ? `${answered} / ${total}` : '';
+      }
+
+      for (const cap of domain.capabilities) {
+        // Capability progress
+        const capProg = document.querySelector(`[data-cap-progress="${cap.id}"]`);
+        if (capProg) {
+          let answered = 0, total = 0;
+          for (const action of cap.actions) {
+            if (action.weight > 0) {
+              total++;
+              if (action.responded) answered++;
+            }
+          }
+          capProg.textContent = total > 0 ? `${answered} of ${total}` : '';
+        }
+
+        // Action scores
+        for (const action of cap.actions) {
+          const el = document.querySelector(`[data-action-score="${action.id}"]`);
+          if (el) {
+            el.textContent = Scoring.formatScore(action.score);
+            if (action.score !== null) {
+              el.classList.add('scored');
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function esc(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  return { render, updateScores };
+})();
+
+
+/* === config.js === */
+/* Config Panel — title/subtitle, capability visibility, weight overrides */
+
+const Config = (() => {
+  function render(specData, state) {
+    const container = document.getElementById('config-content');
+    if (!container) return;
+
+    let html = '';
+
+    // General section
+    html += `<div class="config-section">`;
+    html += `<h3>General</h3>`;
+    html += `<div class="config-field">`;
+    html += `<label for="config-title">Title</label>`;
+    html += `<input type="text" id="config-title" value="${esc(state.config.title || 'FinOps Maturity Assessment')}" placeholder="Assessment title">`;
+    html += `</div>`;
+    html += `<div class="config-field">`;
+    html += `<label for="config-subtitle">Subtitle</label>`;
+    html += `<input type="text" id="config-subtitle" value="${esc(state.config.subtitle !== undefined ? state.config.subtitle : 'Measure progress over time against accepted standards')}" placeholder="Optional subtitle">`;
+    html += `</div>`;
+    html += `</div>`;
+
+    // Capability visibility
+    html += `<div class="config-section">`;
+    html += `<h3>Capability Visibility</h3>`;
+    const hiddenCaps = (state.config.hiddenCapabilities || []);
+
+    for (const domain of specData.domains) {
+      html += `<div class="config-cap-group">`;
+      html += `<div class="config-cap-group-title">${esc(domain.title)}</div>`;
+
+      for (const cap of domain.capabilities) {
+        const checked = !hiddenCaps.includes(cap.id) ? ' checked' : '';
+        html += `<div class="config-cap-item">`;
+        html += `<input type="checkbox" id="cap-vis-${cap.id}" data-cap-vis="${cap.id}"${checked}>`;
+        html += `<label for="cap-vis-${cap.id}">${esc(cap.title)}</label>`;
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+    }
+    html += `</div>`;
+
+    // Weight overrides
+    html += `<div class="config-section">`;
+    html += `<h3>Action Weights</h3>`;
+    html += `<table class="config-weights-table">`;
+    html += `<thead><tr><th>Action</th><th>Weight</th><th>Spec</th></tr></thead>`;
+    html += `<tbody>`;
+
+    for (const domain of specData.domains) {
+      for (const cap of domain.capabilities) {
+        for (const action of cap.actions) {
+          const currentWeight = Scoring.getEffectiveWeight(action, state.config);
+          html += `<tr>`;
+          html += `<td title="${esc(cap.title)}">${esc(action.title)}</td>`;
+          html += `<td><input type="number" data-weight-action="${action.id}" value="${currentWeight}" min="0" max="10" step="0.1"></td>`;
+          html += `<td class="original-weight">${action.weight}</td>`;
+          html += `</tr>`;
+        }
+      }
+    }
+
+    html += `</tbody></table>`;
+    html += `</div>`;
+
+    // Data management
+    html += `<div class="config-section">`;
+    html += `<h3>Data Management</h3>`;
+    html += `<div class="config-actions">`;
+    html += `<button class="config-btn-action" id="config-export">Export JSON</button>`;
+    html += `<button class="config-btn-action" id="config-import">Import JSON</button>`;
+    html += `<button class="config-btn-action danger" id="config-reset">Reset All</button>`;
+    html += `</div>`;
+    html += `</div>`;
+
+    container.innerHTML = html;
+    bindEvents(specData, state);
+  }
+
+  function bindEvents(specData, state) {
+    // Title
+    document.getElementById('config-title').addEventListener('input', (e) => {
+      App.setConfig('title', e.target.value);
+    });
+
+    // Subtitle
+    document.getElementById('config-subtitle').addEventListener('input', (e) => {
+      App.setConfig('subtitle', e.target.value);
+    });
+
+    // Capability visibility
+    document.querySelectorAll('[data-cap-vis]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const capId = parseInt(cb.dataset.capVis);
+        const currentState = App.getState();
+        const hidden = currentState.config.hiddenCapabilities || [];
+        if (cb.checked) {
+          App.setConfig('hiddenCapabilities', hidden.filter(id => id !== capId));
+        } else {
+          App.setConfig('hiddenCapabilities', [...hidden, capId]);
+        }
+        // Re-render assess tab to hide/show capabilities
+        Assess.render(App.getSpecData(), App.getState());
+        App.recalculate();
+      });
+    });
+
+    // Weight overrides
+    document.querySelectorAll('[data-weight-action]').forEach(input => {
+      input.addEventListener('change', () => {
+        const actionId = parseInt(input.dataset.weightAction);
+        const weight = parseFloat(input.value) || 0;
+        const currentState = App.getState();
+        const weights = currentState.config.weights || {};
+        weights[actionId] = weight;
+        App.setConfig('weights', weights);
+        // Re-render assess to hide zero-weight actions
+        Assess.render(App.getSpecData(), App.getState());
+        App.recalculate();
+      });
+    });
+
+    // Export
+    document.getElementById('config-export').addEventListener('click', () => {
+      Storage.exportJSON();
+    });
+
+    // Import
+    document.getElementById('config-import').addEventListener('click', () => {
+      Storage.importJSON();
+    });
+
+    // Reset
+    document.getElementById('config-reset').addEventListener('click', () => {
+      if (confirm('Reset all responses, configuration, and priorities? This cannot be undone.')) {
+        App.setState({ responses: {}, config: {}, priorities: {} });
+      }
+    });
+  }
+
+  function esc(str) {
+    const d = document.createElement('div');
+    d.textContent = str || '';
+    return d.innerHTML;
+  }
+
+  return { render };
+})();
+
+
+/* === charts.js === */
+/* Charts — Phase 2 stub */
+
+const Charts = (() => {
+  function render(scores) {
+    // Phase 2: Radar, bar, and distribution charts via Canvas API / SVG
+  }
+
+  return { render };
+})();
+
+
+/* === app.js === */
+/* App Shell — initialization, tab switching, event bus, data validation */
+
+const App = (() => {
+  let specData = null;
+  let state = { responses: {}, config: {}, priorities: {} };
+  const listeners = {};
+
+  function init() {
+    specData = loadAndValidateData();
+    if (!specData) return;
+
+    state = Storage.load(specData);
+
+    initTabs();
+    initConfig();
+
+    Poster.render(specData, state);
+    Assess.render(specData, state);
+    Config.render(specData, state);
+
+    applyConfig();
+    recalculate();
+  }
+
+  function loadAndValidateData() {
+    const el = document.getElementById('spec-data');
+    if (!el) {
+      showError('No data block found. The assessment file may be corrupted.');
+      return null;
+    }
+
+    let data;
+    try {
+      data = JSON.parse(el.textContent);
+    } catch (e) {
+      showError('Invalid JSON in data block: ' + e.message);
+      return null;
+    }
+
+    const error = validateData(data);
+    if (error) {
+      showError(error);
+      return null;
+    }
+
+    return data;
+  }
+
+  function validateData(data) {
+    if (!data || typeof data !== 'object') return 'Data block is not a valid object.';
+    if (!data.profile) return 'Missing "profile" in data.';
+    if (!Array.isArray(data.domains)) return 'Missing or invalid "domains" array.';
+
+    for (let i = 0; i < data.domains.length; i++) {
+      const d = data.domains[i];
+      if (!d.id || !d.title) return `Domain at index ${i} missing "id" or "title".`;
+      if (!Array.isArray(d.capabilities)) return `Domain "${d.title}" missing "capabilities" array.`;
+
+      for (let j = 0; j < d.capabilities.length; j++) {
+        const c = d.capabilities[j];
+        if (!c.id || !c.title) return `Capability at index ${j} in "${d.title}" missing "id" or "title".`;
+        if (!Array.isArray(c.actions)) return `Capability "${c.title}" missing "actions" array.`;
+
+        for (let k = 0; k < c.actions.length; k++) {
+          const a = c.actions[k];
+          if (!a.id || !a.title) return `Action at index ${k} in "${c.title}" missing "id" or "title".`;
+          if (!a.scoreType) return `Action "${a.title}" missing "scoreType".`;
+          const validTypes = ['binary', 'bucket', 'linear', 'value'];
+          if (!validTypes.includes(a.scoreType)) {
+            return `Action "${a.title}" has invalid scoreType "${a.scoreType}". Must be one of: ${validTypes.join(', ')}.`;
+          }
+          if (!Array.isArray(a.scoring)) return `Action "${a.title}" missing "scoring" array.`;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function showError(message) {
+    const el = document.getElementById('validation-error');
+    if (el) {
+      el.textContent = message;
+      el.classList.remove('hidden');
+    }
+    const main = document.getElementById('app-main');
+    if (main) main.style.display = 'none';
+  }
+
+  function initTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => {
+          t.classList.add('hidden');
+          t.classList.remove('active');
+        });
+        btn.classList.add('active');
+        const tab = document.getElementById('tab-' + btn.dataset.tab);
+        if (tab) {
+          tab.classList.remove('hidden');
+          tab.classList.add('active');
+        }
+      });
+    });
+  }
+
+  function initConfig() {
+    const openBtn = document.querySelector('.config-btn');
+    const panel = document.getElementById('config-panel');
+    const closeBtn = panel.querySelector('.config-close');
+    const overlay = panel.querySelector('.config-overlay');
+
+    openBtn.addEventListener('click', () => panel.classList.remove('hidden'));
+    closeBtn.addEventListener('click', () => panel.classList.add('hidden'));
+    overlay.addEventListener('click', () => panel.classList.add('hidden'));
+  }
+
+  function applyConfig() {
+    const title = (state.config.title || specData.profile.title || 'FinOps Maturity Assessment');
+    const subtitle = (state.config.subtitle !== undefined ? state.config.subtitle : 'Measure progress over time against accepted standards');
+
+    document.getElementById('assessment-title').textContent = title;
+    document.getElementById('assessment-subtitle').textContent = subtitle;
+    document.title = title;
+  }
+
+  function setResponse(actionId, value) {
+    state.responses[actionId] = value;
+    recalculate();
+    Storage.save(state);
+    emit('responseChanged', { actionId, value });
+  }
+
+  function setConfig(key, value) {
+    state.config[key] = value;
+    applyConfig();
+    recalculate();
+    Storage.save(state);
+    emit('configChanged', { key, value });
+  }
+
+  function setPriority(domainId, rank) {
+    state.priorities[domainId] = rank;
+    Storage.save(state);
+    emit('priorityChanged', { domainId, rank });
+  }
+
+  function recalculate() {
+    const scores = Scoring.computeAllScores(specData, state.responses, state.config);
+    Poster.update(scores, state);
+    Assess.updateScores(scores);
+  }
+
+  function getState() { return state; }
+  function getSpecData() { return specData; }
+
+  function setState(newState) {
+    state = newState;
+    applyConfig();
+    Poster.render(specData, state);
+    Assess.render(specData, state);
+    Config.render(specData, state);
+    recalculate();
+    Storage.save(state);
+  }
+
+  function on(event, fn) {
+    if (!listeners[event]) listeners[event] = [];
+    listeners[event].push(fn);
+  }
+
+  function emit(event, data) {
+    (listeners[event] || []).forEach(fn => fn(data));
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  return { setResponse, setConfig, setPriority, getState, getSpecData, setState, on, recalculate };
+})();
+
+</script>
+</body>
+</html>
