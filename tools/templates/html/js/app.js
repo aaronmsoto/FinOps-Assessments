@@ -2,7 +2,7 @@
 
 const App = (() => {
   let specData = null;
-  let state = { responses: {}, config: {}, priorities: {} };
+  let state = { responses: {}, config: {}, priorities: {}, frameworkOverview: '', finalComments: '' };
   const listeners = {};
 
   function init() {
@@ -19,8 +19,8 @@ const App = (() => {
     Config.render(specData, state);
 
     applyConfig();
-    initNotes();
     recalculate();
+    initEditableContent();
   }
 
   function loadAndValidateData() {
@@ -160,19 +160,29 @@ const App = (() => {
     emit('priorityChanged', { domainId, rank });
   }
 
-  function initNotes() {
-    const el = document.getElementById('assessment-notes');
+  function initEditableContent() {
+    // Framework Overview
+    bindEditable('framework-overview', 'frameworkOverview');
+    // Final Comments
+    bindEditable('final-comments', 'finalComments');
+  }
+
+  function bindEditable(elementId, stateKey) {
+    const el = document.getElementById(elementId);
     if (!el) return;
-    if (state.notes) el.innerHTML = state.notes;
+    if (state[stateKey]) {
+      el.innerHTML = state[stateKey];
+    } else {
+      // Capture default content from the HTML element into state
+      state[stateKey] = el.innerHTML;
+      Storage.save(state);
+    }
     el.addEventListener('input', () => {
-      setNotes(el.innerHTML);
+      state[stateKey] = el.innerHTML;
+      Storage.save(state);
     });
   }
 
-  function setNotes(text) {
-    state.notes = text;
-    Storage.save(state);
-  }
 
   function recalculate() {
     const scores = Scoring.computeAllScores(specData, state.responses, state.config);
@@ -205,5 +215,5 @@ const App = (() => {
 
   document.addEventListener('DOMContentLoaded', init);
 
-  return { setResponse, setConfig, setPriority, setNotes, getState, getSpecData, setState, on, recalculate, getDefault };
+  return { setResponse, setConfig, setPriority, getState, getSpecData, setState, on, recalculate, getDefault };
 })();

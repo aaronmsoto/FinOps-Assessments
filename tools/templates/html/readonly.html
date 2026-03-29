@@ -13,7 +13,6 @@
     header { background: #0080AF; color: #fff; padding: 12px 24px; text-align: center; }
     header h1 { font-size: 20px; font-weight: 600; }
     header p { font-size: 13px; opacity: 0.85; }
-
     nav { display: flex; justify-content: center; gap: 4px; margin-top: 8px; }
     .tab-btn { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500;
       padding: 6px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px;
@@ -22,18 +21,27 @@
 
     main { padding: 16px; max-width: 1200px; margin: 0 auto; }
 
-    /* Poster styles (simplified) */
-    .poster-overall { text-align: center; margin-bottom: 12px; }
+    /* Section headings */
+    .ro-heading { font-size: 18px; font-weight: 600; color: #0080AF; margin: 24px 0 8px; }
+    .ro-text { font-size: 13px; line-height: 1.6; color: rgba(0,0,0,0.8); margin-bottom: 16px; }
+
+    /* Poster */
+    .poster-overall { text-align: center; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; }
     .poster-overall-label { font-size: 14px; color: rgba(0,0,0,0.5); }
-    .poster-overall-value { font-size: 28px; font-weight: 700; margin-left: 10px; }
-    .poster-outer { background: #0080AF; border-radius: 0 0 20px 20px; padding: 4px; }
+    .poster-overall-value { font-size: 28px; font-weight: 700; }
+    .poster-overall-icon { display: inline-flex; }
+    .poster-outer { background: #0080AF; border-radius: 20px; padding: 4px; }
     .poster-inner { background: #fff; border-radius: 16px; padding: 12px; }
+    .poster-labels { padding: 6px 4px; display: flex; gap: 8px; }
+    .poster-label-d { background: #CCF4E9; color: rgba(0,0,0,0.75); padding: 3px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+    .poster-label-c { background: #fff; color: rgba(0,0,0,0.75); padding: 3px 12px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); font-size: 13px; font-weight: 500; }
     .poster-pillars { display: flex; gap: 4px; margin-bottom: 4px; }
-    .poster-pillars > .domain-card { flex: 1; }
+    .poster-pillars > .domain-card { flex: 1; display: flex; flex-direction: column; }
     .domain-card { background: #CCF4E9; border-radius: 12px; padding: 8px; }
     .domain-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
     .domain-title-text { flex: 1; }
     .domain-score { font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.6); padding: 1px 6px; border-radius: 4px; }
+    .domain-maturity { display: inline-flex; }
     .priority-badge { font-size: 11px; font-weight: 600; color: #0080AF; background: rgba(255,255,255,0.7); padding: 1px 5px; border-radius: 3px; }
     .cap-row { background: #fff; border-radius: 6px; padding: 6px 8px; margin: 2px 0; display: flex; align-items: center; position: relative; }
     .cap-name { font-size: 12px; font-weight: 500; flex: 1; position: relative; z-index: 1; }
@@ -42,21 +50,31 @@
     .poster-foundation .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
     .poster-pillars .cap-grid { display: flex; flex-direction: column; gap: 2px; }
 
+    /* Charts */
+    .ro-charts canvas { width: 100%; background: #fff; border: 1px solid #e8e8e8; border-radius: 8px; display: block; margin-bottom: 12px; }
+    #ro-chart-domains { height: 260px; }
+    #ro-chart-distribution { height: 220px; }
+
     /* Details tab */
     .details-domain { margin-bottom: 20px; }
     .details-domain h2 { font-size: 16px; color: #0080AF; border-bottom: 2px solid #0080AF; padding-bottom: 4px; margin-bottom: 8px; }
     .details-cap { background: #f8f9fa; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
     .details-cap h3 { font-size: 14px; margin-bottom: 6px; display: flex; justify-content: space-between; }
     .details-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .details-table th { text-align: left; padding: 4px 8px; border-bottom: 1px solid #ddd; color: rgba(0,0,0,0.5); }
-    .details-table td { padding: 4px 8px; border-bottom: 1px solid #f0f0f0; }
+    .details-table th { padding: 4px 8px; border-bottom: 1px solid #ddd; color: rgba(0,0,0,0.5); }
+    .details-table th:first-child { text-align: left; }
+    .details-table th:last-child { text-align: right; width: 70px; }
+    .details-table td:first-child { padding: 4px 8px; border-bottom: 1px solid #f0f0f0; }
+    .details-table td:last-child { padding: 4px 8px; border-bottom: 1px solid #f0f0f0; text-align: right; width: 70px; font-weight: 600; }
 
     footer { text-align: center; padding: 12px; font-size: 11px; color: rgba(0,0,0,0.4); border-top: 1px solid #e0e0e0; margin-top: 24px; }
     footer a { color: rgba(0,0,0,0.5); text-decoration: none; }
 
     @media print {
       nav, .tab-btn { display: none !important; }
-      header { background: none !important; color: #000; border-bottom: 2px solid #0080AF; }
+      header { position: static !important; background: none !important; color: #000; border-bottom: 2px solid #0080AF; }
+      header h1 { color: #0080AF !important; }
+      header p { color: rgba(0,0,0,0.6) !important; opacity: 1 !important; }
     }
   </style>
 </head>
@@ -94,85 +112,201 @@
     }
 
     (function() {
-      const el = document.getElementById('assessment-state');
-      let data;
+      var el = document.getElementById('assessment-state');
+      var data;
       try { data = JSON.parse(el.textContent); } catch(e) { document.body.innerHTML = '<p>Error loading assessment data.</p>'; return; }
 
-      const { config, scores, priorities, specData } = data;
-      const FOUNDATION = ['manage'];
-      const PILLAR_ORDER = ['understand', 'quantify', 'optimize'];
+      var config = data.config || {};
+      var scores = data.scores || { domains: [], overall: null };
+      var priorities = data.priorities || {};
+
+      // Maturity SVGs
+      var SVGS = {
+        precrawl: '<svg width="20" height="20" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="32" fill="#192630" opacity="0.3"/><path d="M29 56L10 45.5V24L29 34.5V56Z" fill="#EEF0F1"/><path d="M35 56L54 45.5V24L35 34.5V56Z" fill="#EEF0F1"/><path d="M32 8L14 18.8L32 29L50 18.8L32 8Z" fill="#EEF0F1"/></svg>',
+        crawl: '<svg width="20" height="20" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="32" fill="#192630"/><path d="M29 56L10 45.5V24L29 34.5V56Z" fill="#00C693"/><path d="M35 56L54 45.5V24L35 34.5V56Z" fill="#EEF0F1"/><path d="M32 8L14 18.8L32 29L50 18.8L32 8Z" fill="#EEF0F1"/></svg>',
+        walk: '<svg width="20" height="20" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="32" fill="#192630"/><path d="M29 56L10 45.5V24L29 34.5V56Z" fill="#00C693"/><path d="M35 56L54 45.5V24L35 34.5V56Z" fill="#00C693"/><path d="M32 8L14 18.8L32 29L50 18.8L32 8Z" fill="#EEF0F1"/></svg>',
+        run: '<svg width="20" height="20" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="32" fill="#192630"/><path d="M29 56L10 45.5V24L29 34.5V56Z" fill="#00C693"/><path d="M35 56L54 45.5V24L35 34.5V56Z" fill="#00C693"/><path d="M32 8L14 18.8L32 29L50 18.8L32 8Z" fill="#00C693"/></svg>'
+      };
 
       // Title
       document.getElementById('ro-title').textContent = config.title || 'Assessment Report';
       document.getElementById('ro-subtitle').textContent = config.subtitle || '';
       document.title = config.title || 'Assessment Report';
-      document.getElementById('ro-footer').insertAdjacentHTML('beforeend',
-        '<br>Generated ' + new Date(data.savedAt).toLocaleDateString());
+      document.getElementById('ro-footer').insertAdjacentHTML('beforeend', '<br>Generated ' + new Date(data.savedAt).toLocaleDateString());
 
-      // Color helper
-      const thresholds = (config.thresholds && config.thresholds.length === 4) ? config.thresholds :
+      // Helpers
+      var thresholds = (config.thresholds && config.thresholds.length === 4) ? config.thresholds.slice().sort(function(a,b){return b.min-a.min;}) :
         [{min:8.0,color:'#00C693'},{min:5.0,color:'#009664'},{min:2.0,color:'#006432'},{min:0,color:'#646464'}];
-      function scoreColor(s) {
-        if (s === null || s === undefined) return '#c8c8c8';
-        var r = Math.round(s * 10) / 10;
-        for (const t of thresholds) { if (r >= t.min) return t.color; }
-        return '#646464';
-      }
-      function fmt(s) { return s === null || s === undefined ? '\u2014' : s.toFixed(1); }
+      function sc(s) { if (s===null||s===undefined) return '#c8c8c8'; var r=Math.round(s*10)/10; for (var i=0;i<thresholds.length;i++){if(r>=thresholds[i].min)return thresholds[i].color;} return '#646464'; }
+      function fmt(s) { return s===null||s===undefined ? '\u2014' : s.toFixed(1); }
+      function matLevel(s) { if(s===null||s===undefined)return null; var r=Math.round(s*10)/10; if(r>=thresholds[0].min)return 'run'; if(r>=thresholds[1].min)return 'walk'; if(r>=thresholds[2].min)return 'crawl'; return 'precrawl'; }
+      function matSvg(s) { var l=matLevel(s); return l?SVGS[l]:''; }
 
-      // Render Results poster
-      const isFoundation = d => FOUNDATION.some(kw => d.title.toLowerCase().includes(kw));
-      const pillarSort = d => { const i = PILLAR_ORDER.findIndex(kw => d.title.toLowerCase().includes(kw)); return i >= 0 ? i : 99; };
-      const pillars = scores.domains.filter(d => !isFoundation(d)).sort((a,b) => pillarSort(a) - pillarSort(b));
-      const foundation = scores.domains.filter(d => isFoundation(d));
+      // Domain sorting
+      var PILLAR_ORDER = ['understand','quantify','optimize'];
+      var FOUNDATION = ['manage'];
+      function isF(d){return FOUNDATION.some(function(kw){return d.title.toLowerCase().indexOf(kw)>=0;});}
+      function pSort(d){var i=PILLAR_ORDER.findIndex(function(kw){return d.title.toLowerCase().indexOf(kw)>=0;}); return i>=0?i:99;}
+      var pillars = scores.domains.filter(function(d){return !isF(d);}).sort(function(a,b){return pSort(a)-pSort(b);});
+      var foundation = scores.domains.filter(isF);
+      var sorted = pillars.concat(foundation);
 
-      let rh = '<div class="poster-overall"><span class="poster-overall-label">Overall Score</span>';
-      rh += '<span class="poster-overall-value" style="color:' + scoreColor(scores.overall) + '">' + fmt(scores.overall) + '</span></div>';
+      // === BUILD RESULTS TAB ===
+      var rh = '';
+
+      // Framework Overview
+      var fwOverview = data.frameworkOverview || 'FinOps is an operational framework and cultural practice which maximizes the business value of technology, enables timely data-driven decision making, and creates financial accountability through collaboration between engineering, finance, and business teams. This assessment measures maturity across FinOps Capabilities to assess your organization\u2019s ability to achieve the outcomes represented by FinOps Domains.';
+      rh += '<h2 class="ro-heading">Framework Overview</h2>';
+      rh += '<div class="ro-text">' + fwOverview + '</div>';
+
+      // Overall Score
+      rh += '<div class="poster-overall"><span class="poster-overall-label">Overall Score</span>';
+      rh += '<span class="poster-overall-icon">' + matSvg(scores.overall) + '</span>';
+      rh += '<span class="poster-overall-value" style="color:' + sc(scores.overall) + '">' + fmt(scores.overall) + '</span></div>';
+
+      // Poster
       rh += '<div class="poster-outer"><div class="poster-inner">';
+      rh += '<div class="poster-labels"><span class="poster-label-d">Domains</span><span class="poster-label-c">Capabilities</span></div>';
       rh += '<div class="poster-pillars">';
-      pillars.forEach(d => { rh += renderDomainCard(d); });
+      pillars.forEach(function(d){rh += domCard(d);});
       rh += '</div>';
-      foundation.forEach(d => { rh += '<div class="poster-foundation">' + renderDomainCard(d, true) + '</div>'; });
+      foundation.forEach(function(d){rh += '<div class="poster-foundation">' + domCard(d,true) + '</div>';});
       rh += '</div></div>';
+
+      // Charts
+      rh += '<h3 class="ro-heading" style="font-size:15px">Domain Maturity Chart</h3>';
+      rh += '<div class="ro-charts"><canvas id="ro-chart-domains"></canvas></div>';
+      rh += '<h3 class="ro-heading" style="font-size:15px">Capability Maturity Chart</h3>';
+      rh += '<div class="ro-charts"><canvas id="ro-chart-caps"></canvas></div>';
+      rh += '<h3 class="ro-heading" style="font-size:15px">Action Score Distribution</h3>';
+      rh += '<div class="ro-charts"><canvas id="ro-chart-distribution"></canvas></div>';
+
+      // Final Comments
+      var fc = data.finalComments || 'FinOps is a team sport! Work collaboratively across the various personas important for FinOps success and conduct this FinOps Maturity Assessment periodically to track your progress over time to achieve your desired business outcomes.';
+      rh += '<h2 class="ro-heading">Final Comments</h2>';
+      rh += '<div class="ro-text">' + fc + '</div>';
+
       document.getElementById('tab-results').innerHTML = rh;
 
-      function renderDomainCard(d, isF) {
-        const p = priorities[d.id];
-        let h = '<div class="domain-card"><div class="domain-title">';
+      function domCard(d,isFoundation) {
+        var p = priorities[d.id];
+        var h = '<div class="domain-card"><div class="domain-title">';
         if (p) h += '<span class="priority-badge">#' + p + '</span>';
         h += '<span class="domain-title-text">' + d.title + '</span>';
-        h += '<span class="domain-score" style="color:' + scoreColor(d.score) + '">' + fmt(d.score) + '</span>';
+        h += '<span class="domain-maturity">' + matSvg(d.score) + '</span>';
+        h += '<span class="domain-score" style="color:' + sc(d.score) + '">' + fmt(d.score) + '</span>';
         h += '</div><div class="cap-grid">';
-        d.capabilities.forEach(c => {
+        d.capabilities.forEach(function(c) {
           if (c.hidden) return;
           h += '<div class="cap-row">';
-          if (c.score !== null) h += '<div class="cap-bar" style="width:' + (c.score*10) + '%;background:' + scoreColor(c.score) + '"></div>';
+          if (c.score !== null) h += '<div class="cap-bar" style="width:' + (c.score*10) + '%;background:' + sc(c.score) + '"></div>';
           h += '<span class="cap-name">' + c.title + '</span>';
-          h += '<span class="cap-score" style="color:' + scoreColor(c.score) + '">' + fmt(c.score) + '</span>';
+          h += '<span class="cap-score" style="color:' + sc(c.score) + '">' + fmt(c.score) + '</span>';
           h += '</div>';
         });
         h += '</div></div>';
         return h;
       }
 
-      // Notes
-      if (data.notes) {
-        rh += '<div style="max-width:1200px;margin:24px auto 0;padding:0 16px;font-size:13px;line-height:1.6;color:rgba(0,0,0,0.8)">';
-        rh += data.notes;
-        rh += '</div>';
+      // === DRAW CHARTS ===
+      drawDomainChart();
+      drawCapabilityChart();
+      drawDistributionChart();
+
+      function drawDomainChart() {
+        var canvas = document.getElementById('ro-chart-domains'); if(!canvas) return;
+        var ctx = canvas.getContext('2d'); var dpr = window.devicePixelRatio||1;
+        var w = canvas.clientWidth; var h = canvas.clientHeight;
+        canvas.width = w*dpr; canvas.height = h*dpr; ctx.scale(dpr,dpr);
+        var n = sorted.length; if(n===0) return;
+        var chartTop=30, chartBottom=h-60, chartH=chartBottom-chartTop;
+        var colW = Math.min(120,(w-80)/n); var gap = (w-n*colW)/(n+1);
+        sorted.forEach(function(d,i) {
+          var x = gap + i*(colW+gap); var p = priorities[d.id]||'';
+          if (d.score !== null) {
+            var barH = (d.score/10)*chartH;
+            ctx.fillStyle = sc(d.score); ctx.globalAlpha=0.85;
+            ctx.fillRect(x, chartBottom-barH, colW, barH);
+            ctx.globalAlpha=1;
+            ctx.fillStyle='#fff'; ctx.font='bold 16px IBM Plex Sans,sans-serif'; ctx.textAlign='center';
+            ctx.textBaseline = barH>30?'top':'bottom';
+            ctx.fillText(fmt(d.score), x+colW/2, barH>30?chartBottom-barH+8:chartBottom-barH-4);
+          }
+          ctx.fillStyle='#333'; ctx.font='bold 11px IBM Plex Sans,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='top';
+          var label = p ? '#'+p+' '+d.title : d.title;
+          if(label.length>18) label=label.substring(0,16)+'\u2026';
+          ctx.fillText(label, x+colW/2, chartBottom+6);
+        });
       }
 
-      // Render Details tab
-      let dh = '';
-      scores.domains.forEach(d => {
-        dh += '<div class="details-domain"><h2>' + d.title + '</h2>';
-        d.capabilities.forEach(c => {
+      function drawCapabilityChart() {
+        var canvas = document.getElementById('ro-chart-caps'); if(!canvas) return;
+        var ctx = canvas.getContext('2d'); var dpr = window.devicePixelRatio||1;
+        var w = canvas.clientWidth;
+        var hdrH=24, capH=22, sp=8, totalH=10;
+        sorted.forEach(function(d){totalH+=hdrH; d.capabilities.forEach(function(c){if(!c.hidden)totalH+=capH;}); totalH+=sp;});
+        totalH = Math.max(150, totalH+10);
+        canvas.style.height = totalH+'px'; canvas.width=w*dpr; canvas.height=totalH*dpr; ctx.scale(dpr,dpr);
+        var lw=200, barMax=w-lw-50, y=10;
+        sorted.forEach(function(d) {
+          ctx.fillStyle='#0080AF'; ctx.font='bold 12px IBM Plex Sans,sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
+          ctx.fillText(d.title, 4, y+hdrH/2); y+=hdrH;
+          d.capabilities.forEach(function(c) {
+            if(c.hidden) return;
+            ctx.fillStyle='#555'; ctx.font='11px IBM Plex Sans,sans-serif';
+            var nm=c.title.length>28?c.title.substring(0,26)+'\u2026':c.title;
+            ctx.fillText(nm, 12, y+capH/2);
+            if(c.score!==null) {
+              var bw=(c.score/10)*barMax; ctx.fillStyle=sc(c.score); ctx.fillRect(lw,y+3,bw,capH-6);
+              ctx.fillStyle='#333'; ctx.font='10px IBM Plex Sans,sans-serif'; ctx.fillText(fmt(c.score),lw+bw+6,y+capH/2);
+            } else { ctx.fillStyle='#f0f0f0'; ctx.fillRect(lw,y+3,barMax,capH-6); }
+            y+=capH;
+          });
+          y+=sp;
+        });
+      }
+
+      function drawDistributionChart() {
+        var canvas = document.getElementById('ro-chart-distribution'); if(!canvas) return;
+        var ctx = canvas.getContext('2d'); var dpr = window.devicePixelRatio||1;
+        var w=canvas.clientWidth, h=canvas.clientHeight;
+        canvas.width=w*dpr; canvas.height=h*dpr; ctx.scale(dpr,dpr);
+        var labels=['Run','Walk','Crawl','Pre-crawl'];
+        var buckets=[];
+        for(var i=0;i<thresholds.length;i++){
+          var mn=thresholds[i].min, mx=i===0?10:thresholds[i-1].min;
+          buckets.push({label:labels[i]||'',range:mn.toFixed(1)+'-'+mx.toFixed(1),min:mn,color:thresholds[i].color,count:0});
+        }
+        buckets.push({label:'N/A',range:'',color:'#c8c8c8',count:0});
+        sorted.forEach(function(d){d.capabilities.forEach(function(c){if(c.hidden)return; c.actions.forEach(function(a){
+          if(a.weight<=0)return;
+          if(a.score===null||!a.responded){buckets[buckets.length-1].count++;return;}
+          for(var j=0;j<buckets.length-1;j++){if(a.score>=buckets[j].min){buckets[j].count++;return;}}
+          buckets[buckets.length-1].count++;
+        });});});
+        var maxC=1; buckets.forEach(function(b){if(b.count>maxC)maxC=b.count;});
+        var bw=Math.floor((w-60)/buckets.length)-8, cH=h-50, cB=h-35;
+        ctx.textAlign='center';
+        buckets.forEach(function(b,i){
+          var x=30+i*(bw+8), barH=(b.count/maxC)*cH;
+          ctx.fillStyle=b.color; ctx.fillRect(x,cB-barH,bw,barH);
+          ctx.fillStyle='#333'; ctx.font='11px IBM Plex Sans,sans-serif'; ctx.textBaseline='bottom'; ctx.fillText(b.count,x+bw/2,cB-barH-2);
+          ctx.fillStyle='#333'; ctx.font='bold 10px IBM Plex Sans,sans-serif'; ctx.textBaseline='top'; ctx.fillText(b.label,x+bw/2,cB+3);
+          if(b.range){ctx.fillStyle='#999'; ctx.font='9px IBM Plex Sans,sans-serif'; ctx.fillText(b.range,x+bw/2,cB+16);}
+        });
+      }
+
+      // === BUILD DETAILS TAB ===
+      var dh = '';
+      sorted.forEach(function(d) {
+        dh += '<div class="details-domain"><h2>' + d.title + ' <span style="float:right;font-size:14px;color:' + sc(d.score) + '">' + fmt(d.score) + '</span></h2>';
+        d.capabilities.forEach(function(c) {
           if (c.hidden) return;
-          dh += '<div class="details-cap"><h3><span>' + c.title + '</span><span style="color:' + scoreColor(c.score) + '">' + fmt(c.score) + '</span></h3>';
+          dh += '<div class="details-cap"><h3><span>' + c.title + '</span><span style="color:' + sc(c.score) + '">' + fmt(c.score) + '</span></h3>';
           dh += '<table class="details-table"><thead><tr><th>Action</th><th>Score</th></tr></thead><tbody>';
-          c.actions.forEach(a => {
+          c.actions.forEach(function(a) {
             if (a.weight <= 0) return;
-            dh += '<tr><td>' + a.title + '</td><td style="color:' + scoreColor(a.score) + '">' + fmt(a.score) + '</td></tr>';
+            dh += '<tr><td>' + a.title + '</td><td style="color:' + sc(a.score) + '">' + fmt(a.score) + '</td></tr>';
           });
           dh += '</tbody></table></div>';
         });

@@ -27,7 +27,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 420px;
+  width: 550px;
   max-width: 90vw;
   height: 100%;
   background: #fff;
@@ -47,7 +47,7 @@
 
 .config-header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
 }
 
@@ -78,7 +78,7 @@
 }
 
 .config-section h3 {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #0080AF;
   text-transform: uppercase;
@@ -95,7 +95,7 @@
 
 .config-field label {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.6);
   margin-bottom: 4px;
@@ -104,7 +104,7 @@
 .config-field input[type="text"] {
   width: 100%;
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   padding: 8px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -126,7 +126,7 @@
 }
 
 .config-domain-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #0080AF;
   padding: 8px 12px;
@@ -159,7 +159,7 @@ details[open] > .config-domain-title::before {
   align-items: center;
   gap: 6px;
   padding: 6px 8px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   list-style: none;
@@ -202,16 +202,47 @@ details[open] > .config-cap-summary::before {
   border-bottom: none;
 }
 
-.config-action-row.dimmed {
-  opacity: 0.4;
+/* Action status icons */
+.config-action-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
-.config-action-row.dimmed .config-action-name {
-  text-decoration: line-through;
+.config-action-icon svg {
+  vertical-align: middle;
+}
+
+/* Beta toggle */
+.config-beta-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 6px 8px;
+  background: #fef9e7;
+  border: 1px solid #f5e6a3;
+  border-radius: 6px;
+}
+
+.config-beta-toggle input[type="checkbox"] {
+  accent-color: #F59E0B;
+}
+
+.config-beta-toggle label {
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.beta-hint {
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 12px;
 }
 
 .config-action-name {
-  font-size: 12px;
+  font-size: 13px;
   color: rgba(0, 0, 0, 0.7);
   flex: 1;
   min-width: 0;
@@ -258,7 +289,7 @@ details[open] > .config-cap-summary::before {
 }
 
 .threshold-label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.6);
   width: 60px;
@@ -303,7 +334,7 @@ details[open] > .config-cap-summary::before {
 
 .config-btn-action {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   padding: 8px 16px;
   border: 1px solid #ccc;

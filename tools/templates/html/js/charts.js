@@ -47,7 +47,7 @@ const Charts = (() => {
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, w, h);
 
-    const domains = sortDomains(scores.domains);
+    const domains = Utils.sortDomains(scores.domains);
     const n = domains.length;
     if (n === 0) { drawEmptyMessage(ctx, w, h, 'No domains'); return; }
 
@@ -159,20 +159,6 @@ const Charts = (() => {
   }
 
   // === Capability Bars (horizontal, grouped by domain) ===
-  function sortDomains(domains) {
-    const PILLAR_ORDER = ['understand', 'quantify', 'optimize'];
-    const FOUNDATION = ['manage'];
-    const pillars = domains
-      .filter(d => !FOUNDATION.some(kw => d.title.toLowerCase().includes(kw)))
-      .sort((a, b) => {
-        const ai = PILLAR_ORDER.findIndex(kw => a.title.toLowerCase().includes(kw));
-        const bi = PILLAR_ORDER.findIndex(kw => b.title.toLowerCase().includes(kw));
-        return (ai >= 0 ? ai : 99) - (bi >= 0 ? bi : 99);
-      });
-    const foundation = domains.filter(d => FOUNDATION.some(kw => d.title.toLowerCase().includes(kw)));
-    return [...pillars, ...foundation];
-  }
-
   function drawCapabilityBars(scores) {
     const canvas = document.getElementById('chart-capabilities');
     if (!canvas) return;
@@ -183,7 +169,7 @@ const Charts = (() => {
     const headerH = 24;
     const capRowH = 22;
     const spacing = 8;
-    const sorted = sortDomains(scores.domains);
+    const sorted = Utils.sortDomains(scores.domains);
     let totalH = 10;
 
     for (const d of sorted) {

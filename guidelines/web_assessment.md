@@ -242,9 +242,13 @@ Changes to weights dynamically recalculate results. The original spec weights ar
 
 #### Data Management
 
-- **Export JSON**: Download current state (config + all responses + domain priorities) as a `.json` file
-- **Import JSON**: Load a previously exported state, replacing current data
+- **Export JSON**: Download a comprehensive JSON file containing both human-readable assessment results and raw state data. The v2.0 format includes:
+  - `assessment` block: complete scored results with all names, titles, descriptions, maturity levels, completion percentage, domain priorities, configurable thresholds, frameworkOverview, and finalComments — suitable for import into databases and BI tools
+  - `state` block: raw responses, config, priorities, frameworkOverview, and finalComments for re-import into the assessment UI
+- **Import JSON**: Load a previously exported JSON, restoring state from the `state` block
 - **Reset**: Clear all responses and config (with confirmation)
+
+The JSON export is designed to serve as a machine-readable snapshot that organizations can save periodically to track maturity progress over time in external systems (databases, Power BI, Tableau, etc.).
 
 #### Diagnostics Mode
 
@@ -252,7 +256,7 @@ A toggle at the bottom of the Config panel that enables a transparent diagnostic
 
 #### Action Filtering
 
-> **Note:** Some actions in the specification may have `Status != Accepted` or `Weight = 0.0` and may not be fully defined (e.g., only a single `Score: 0 / Condition: null` entry). It may be prudent to exclude these from the generated HTML entirely — only generating actions that are `Accepted` and/or have `Weight > 0`. The Config panel would then only show the subset of well-defined actions, while still allowing users to adjust weights (including setting them to zero to further narrow scope). This filtering would happen in the Python composer during data generation, not in the JS UI.
+> **Note:** Actions with `Weight = 0.0` in the specification are considered "beta" (typically `Status: Proposed`, not yet fully defined). In the Config panel, these are hidden by default behind a "Show Beta Actions" toggle. When shown, beta actions display an orange warning triangle (⚠) icon, while active actions (weight > 0) display a green checkmark (✓) icon. Users can toggle beta visibility and adjust weights to activate or deactivate actions. The Assess tab and scoring engine skip zero-weight actions regardless of the toggle.
 
 #### Future: Branding
 
@@ -266,7 +270,7 @@ This is deferred to keep the initial implementation focused on core assessment f
 
 ### Tab 1: Results (Default View)
 
-The primary view, shown on initial load. A visual dashboard modeled on the FinOps Framework poster layout, displaying assessment outcomes in real time as the user completes the questionnaire on the Assess tab.
+The primary view, shown on initial load. Contains (in order): an editable "Framework Overview" section with default FinOps definition text, the overall score with maturity icon, the poster visualization, charts, and an editable "Final Comments" section. Assessment outcomes update in real time as the user completes the questionnaire on the Assess tab.
 
 #### Poster View
 
@@ -351,9 +355,9 @@ After configuration and assessment are complete, the user saves the final state 
 
 The saved file contains two tabs:
 
-1. **Results** — The poster view with final scores, domain priorities, title/subtitle, charts, and attribution. Identical to the live Results tab but with no interactive controls.
+1. **Results** — The full Results view as static content: Framework Overview text, overall score with maturity icon, poster with domain cards/capabilities/scores/maturity icons, Domain Maturity Chart, Capability Maturity Chart, Action Score Distribution chart, and Final Comments. All rendered as non-editable content with Canvas-based charts.
 
-2. **Details** — A read-only record of every action response and score, organized by domain and capability. This replaces the interactive Assess tab with a static table:
+2. **Details** — A read-only record of every action response and score, organized by domain and capability (sorted: Understand, Quantify, Optimize, Manage). Scores are right-aligned for clean formatting:
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -413,34 +417,32 @@ The read-only template lives in the repo as `tools/templates/html/readonly.html`
 
 ### Tab 2: Assess
 
-A questionnaire interface for conducting the assessment, organized by domain and capability. Responses immediately update the Results poster on Tab 1.
+A questionnaire interface organized into two steps within visually consistent card containers. Responses immediately update the Results poster on Tab 1. All domain ordering matches the poster (Understand, Quantify, Optimize, Manage).
 
 #### Layout
 
 ```
-┌─────────────────────────────────────────────────┐
-│ [Domain 1: Manage the FinOps Practice]          │
-│                                                 │
-│  ┌─ Capability: Governance, Policy & Risk ────┐ │
-│  │                                            │ │
-│  │  Action: Establish Cloud Governance        │ │
-│  │  "Define and implement a governance..."    │ │
-│  │                                            │ │
-│  │  ○ No governance framework (0)             │ │
-│  │  ● Framework established (10)              │ │
-│  │                                            │ │
-│  │  Action: Define Policy Exceptions...       │ │
-│  │  ...                                       │ │
-│  └────────────────────────────────────────────┘ │
-│                                                 │
-│  ┌─ Capability: FinOps Practice Operations ───┐ │
-│  │  ...                                       │ │
-│  └────────────────────────────────────────────┘ │
-│                                                 │
-│ [Domain 2: Optimize Usage & Cost]               │
-│  ...                                            │
+┌─ Step 1: Prioritize Domains ────────────────────┐
+│  Understand [_]  Quantify [_]  Optimize [_]     │
+│  Manage [_]                                      │
 └─────────────────────────────────────────────────┘
+
+┌─ Step 2: Assess Capabilities ───────────────────┐
+│  [Understand 3/5] [Quantify 0/6] [Optimize] [Manage]  ← domain tabs
+│                                                 │
+│  ┌─ Capability: Data Ingestion ─── 2 of 3 ───┐ │
+│  │  Action: Establish Billing Pipeline        │ │
+│  │  ○ No pipeline (0)  ● Pipeline exists (10) │ │
+│  │  ...                                       │ │
+│  └────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────┘
+
+                                    [View Results (42%)]  ← floating button
 ```
+
+#### Domain Tabs
+
+Horizontal tabs within Step 2 — one per domain (Understand, Quantify, Optimize, Manage). Only one domain's capabilities are visible at a time. Each tab shows a progress badge (e.g., `3/8` answered). The tab bar is sticky below the main header.
 
 #### Interaction by Score Type
 
@@ -458,12 +460,12 @@ There are 7 score types defined in the FinOps++ specification. Each maps to a sp
 
 For all types except `binary`, `bucket`, and `sequential` (with formula), the UI renders radio buttons for each entry in the action's `Scoring` list, allowing the user to select the condition that best describes their current state. Sequential actions without a formula also fall back to this radio button pattern.
 
-#### Progress
+#### Progress & Completion
 
-- A progress indicator per capability (e.g., "3 of 6 actions answered")
-- A progress indicator per domain
-- Overall completion percentage in the tab header
+- Progress badge on each domain tab (e.g., "3/8")
+- Progress indicator per capability (e.g., "2 of 5")
 - Unanswered actions are visually distinct (not scored until answered)
+- **Floating "View Results" button** — fixed in the bottom-right corner, shows overall completion percentage (e.g., "View Results (42%)"). Green when progress > 0, muted grey when empty. Clicking switches to the Results tab.
 
 ---
 
@@ -519,7 +521,7 @@ For `sequential` score types, the formula may contain numbered items (`1. step`,
 12. **Save As HTML** — Bundled read-only template (`readonly.html`) with Results + Details tabs. "Save As Read-Only HTML" button in Config Data Management section produces a frozen snapshot.
 13. **Progress indicators** — *(completed in Phase 1)*
 14. **Configurable maturity thresholds** — Config section with Run/Walk/Crawl/Pre-crawl threshold values and color pickers. Changes apply in real-time to poster, charts, and scoring color scale. Defaults: >=8.0 Run, >=5.0 Walk, >=2.0 Crawl, <2.0 Pre-crawl. Maturity SVG icons (isometric cubes from FinOps Foundation) displayed next to domain scores and overall score.
-15. **Notes/comments** — *(moved from Phase 3)* Subtle `contenteditable` area below charts on Results tab. Shows placeholder "Click to add notes..." when empty, expands on focus with a clean border. Content persists to localStorage, JSON export, Print View, and Save As HTML. Empty notes are invisible in print output.
+15. **Editable content sections** — *(moved from Phase 3)* Two `contenteditable` sections on the Results tab: "Framework Overview" at the top (default: FinOps definition + assessment purpose) and "Final Comments" at the bottom (default: collaborative call-to-action). Both persist to `state.frameworkOverview` and `state.finalComments` in localStorage, JSON export, and Save As HTML. Default content is captured into state on first load so it's always included in exports.
 
 ### Phase 3: Enhancements
 

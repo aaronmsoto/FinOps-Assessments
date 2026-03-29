@@ -1,20 +1,21 @@
 /* Assess Tab — render questionnaire, handle input by score type */
 
 const Assess = (() => {
+  let activeDomainIdx = 0;
+
   function render(specData, state) {
     const container = document.getElementById('assess-container');
     if (!container) return;
 
+    const sorted = Utils.sortDomains(specData.domains);
     let html = '';
 
     // Step 1: Domain Priority Ranking
-    html += `<div class="assess-priority-step">`;
-    html += `<div class="assess-priority-header">`;
-    html += `<h2>Step 1: Prioritize Domains</h2>`;
-    html += `<p>Rank each domain by organizational priority (1 = highest). This provides strategic context but does not affect scoring.</p>`;
-    html += `</div>`;
+    html += `<div class="assess-step-card">`;
+    html += `<h2 class="assess-step-title">Step 1: Prioritize Domains</h2>`;
+    html += `<p class="assess-step-desc">Rank each domain by organizational priority (1 = highest). This provides strategic context but does not affect scoring.</p>`;
     html += `<div class="assess-priority-grid">`;
-    for (const domain of specData.domains) {
+    for (const domain of sorted) {
       const priority = (state.priorities && state.priorities[domain.id]) || '';
       html += `<div class="assess-priority-item">`;
       html += `<span class="assess-priority-domain">${esc(domain.title)}</span>`;
@@ -30,13 +31,24 @@ const Assess = (() => {
     html += `</div></div>`;
 
     // Step 2: Assessment Questionnaire
-    html += `<h2 class="assess-step-header">Step 2: Assess Capabilities</h2>`;
+    html += `<div class="assess-step-card">`;
+    html += `<h2 class="assess-step-title">Step 2: Assess Capabilities</h2>`;
 
-    for (const domain of specData.domains) {
-      html += `<div class="assess-domain" data-assess-domain="${domain.id}">`;
-      html += `<h2 class="assess-domain-header">${esc(domain.title)}`;
-      html += `<span class="assess-domain-progress" data-domain-progress="${domain.id}"></span>`;
-      html += `</h2>`;
+    // Domain tabs
+    html += `<div class="assess-domain-tabs">`;
+    sorted.forEach((domain, i) => {
+      const active = i === activeDomainIdx ? ' active' : '';
+      html += `<button class="assess-domain-tab${active}" data-domain-tab-idx="${i}" data-domain-tab-id="${domain.id}">`;
+      html += `<span class="tab-label">${esc(domain.title)}</span>`;
+      html += `<span class="tab-progress" data-domain-progress="${domain.id}"></span>`;
+      html += `</button>`;
+    });
+    html += `</div>`;
+
+    // Domain content panels
+    sorted.forEach((domain, i) => {
+      const vis = i === activeDomainIdx ? '' : ' hidden';
+      html += `<div class="assess-domain${vis}" data-assess-domain="${domain.id}" data-domain-panel-idx="${i}">`;
 
       for (const cap of domain.capabilities) {
         const hidden = Scoring.isCapabilityHidden(cap, state.config);
@@ -60,7 +72,7 @@ const Assess = (() => {
           if (action.description) {
             html += `<div class="assess-action-desc">${esc(action.description)}</div>`;
           }
-          html += `<div class="assess-action-score" data-action-score="${action.id}">—</div>`;
+          html += `<div class="assess-action-score" data-action-score="${action.id}">\u2014</div>`;
           html += renderInput(action, response);
           html += `</div>`;
         }
@@ -68,11 +80,28 @@ const Assess = (() => {
         html += `</div>`;
       }
 
+      // Bottom domain tabs (repeat navigation)
+      html += `<div class="assess-domain-tabs bottom-tabs">`;
+      sorted.forEach((bd, bi) => {
+        const bactive = bi === i ? ' active' : '';
+        html += `<button class="assess-domain-tab${bactive}" data-domain-tab-idx="${bi}" data-domain-tab-id="${bd.id}">`;
+        html += `<span class="tab-label">${esc(bd.title)}</span>`;
+        html += `</button>`;
+      });
       html += `</div>`;
-    }
+
+      html += `</div>`;
+    });
+
+    html += `</div>`; // close step-card
+
+    // Floating View Results button
+    html += `<button class="assess-view-results" id="assess-view-results">View Results <span id="assess-completion"></span></button>`;
 
     container.innerHTML = html;
     bindInputs(specData);
+    bindDomainTabs();
+    bindViewResults();
 
     // Apply diagnostics state
     if (state.config.diagnostics) {
@@ -263,6 +292,48 @@ const Assess = (() => {
     });
   }
 
+  function bindDomainTabs() {
+    document.querySelectorAll('.assess-domain-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const idx = parseInt(tab.dataset.domainTabIdx);
+        activeDomainIdx = idx;
+        // Sync ALL tabs (top and bottom) with matching index
+        document.querySelectorAll('.assess-domain-tab').forEach(t => {
+          t.classList.toggle('active', parseInt(t.dataset.domainTabIdx) === idx);
+        });
+        // Toggle domain panels
+        document.querySelectorAll('[data-domain-panel-idx]').forEach(panel => {
+          panel.classList.toggle('hidden', parseInt(panel.dataset.domainPanelIdx) !== idx);
+        });
+        // Scroll to top of the assess container
+        const container = document.getElementById('assess-container');
+        if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  }
+
+  function bindViewResults() {
+    const btn = document.getElementById('assess-view-results');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      // Switch to Results tab
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === 'results');
+      });
+      document.querySelectorAll('.tab-content').forEach(t => {
+        t.classList.add('hidden');
+        t.classList.remove('active');
+      });
+      const results = document.getElementById('tab-results');
+      if (results) {
+        results.classList.remove('hidden');
+        results.classList.add('active');
+      }
+      requestAnimationFrame(() => App.recalculate());
+      window.scrollTo(0, 0);
+    });
+  }
+
   function updateScores(scores) {
     for (const domain of scores.domains) {
       // Domain progress
@@ -306,6 +377,26 @@ const Assess = (() => {
           }
         }
       }
+    }
+
+    // Update floating button completion %
+    let totalAll = 0, answeredAll = 0;
+    for (const d of scores.domains) {
+      for (const c of d.capabilities) {
+        if (c.hidden) continue;
+        for (const a of c.actions) {
+          if (a.weight > 0) { totalAll++; if (a.responded) answeredAll++; }
+        }
+      }
+    }
+    const completionEl = document.getElementById('assess-completion');
+    if (completionEl && totalAll > 0) {
+      const pct = Math.round((answeredAll / totalAll) * 100);
+      completionEl.textContent = `(${pct}%)`;
+    }
+    const btn = document.getElementById('assess-view-results');
+    if (btn) {
+      btn.classList.toggle('has-progress', answeredAll > 0);
     }
   }
 

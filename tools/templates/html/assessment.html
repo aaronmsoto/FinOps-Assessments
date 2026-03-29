@@ -80,20 +80,22 @@
       <section id="tab-results" class="tab-content active">
         <div id="poster-container"></div>
         <div class="charts-section">
-          <h3 class="chart-heading">Domain Maturity</h3>
+          <h3 class="chart-heading">Domain Maturity Chart</h3>
           <canvas id="chart-domains"></canvas>
-          <h3 class="chart-heading">Capability Maturity</h3>
+          <h3 class="chart-heading">Capability Maturity Chart</h3>
           <canvas id="chart-capabilities"></canvas>
           <h3 class="chart-heading">Action Score Distribution</h3>
           <canvas id="chart-distribution"></canvas>
         </div>
-        <div class="notes-section">
-          <div id="assessment-notes" class="notes-content" contenteditable="true" data-placeholder="Click to add notes, commentary, or recommendations..."></div>
+        <div class="editable-section final-comments-section">
+          <h2 class="section-heading">Final Comments</h2>
+          <div id="final-comments" class="editable-content" contenteditable="true" data-placeholder="Add final comments or recommendations...">FinOps is a team sport! Work collaboratively across the various personas important for FinOps success and conduct this FinOps Maturity Assessment periodically to track your progress over time to achieve your desired business outcomes.</div>
         </div>
       </section>
       <section id="tab-assess" class="tab-content hidden">
         <div id="assess-container"></div>
       </section>
+      <div class="back-to-top-container"><a href="#" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Back to top &uarr;</a></div>
     </main>
 
     <aside id="config-panel" class="config-panel hidden">

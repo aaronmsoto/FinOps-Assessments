@@ -1,32 +1,25 @@
 /* Poster View — render domains/capabilities matching finops.org layout */
 
 const Poster = (() => {
-  // "Manage the FinOps Practice" is the foundation domain (full-width bottom)
-  // The other 3 are vertical pillars: Understand, Quantify, Optimize (left to right)
-  const FOUNDATION_KEYWORDS = ['manage'];
-  const PILLAR_ORDER = ['understand', 'quantify', 'optimize'];
-
-  function isFoundationDomain(domain) {
-    const lower = domain.title.toLowerCase();
-    return FOUNDATION_KEYWORDS.some(kw => lower.includes(kw));
-  }
-
-  function pillarSortKey(domain) {
-    const lower = domain.title.toLowerCase();
-    const idx = PILLAR_ORDER.findIndex(kw => lower.includes(kw));
-    return idx >= 0 ? idx : 99;
-  }
-
   function render(specData, state) {
     const container = document.getElementById('poster-container');
     if (!container) return;
 
-    const pillarDomains = specData.domains
-      .filter(d => !isFoundationDomain(d))
-      .sort((a, b) => pillarSortKey(a) - pillarSortKey(b));
-    const foundationDomains = specData.domains.filter(d => isFoundationDomain(d));
+    // Sort domains: pillars (Understand, Quantify, Optimize) then foundation (Manage)
+    const sorted = Utils.sortDomains(specData.domains);
+    const isFoundation = d => d.title.toLowerCase().includes('manage');
+    const pillarDomains = sorted.filter(d => !isFoundation(d));
+    const foundationDomains = sorted.filter(isFoundation);
 
-    let html = '<div class="poster">';
+    const defaultOverview = 'FinOps is an operational framework and cultural practice which maximizes the business value of technology, enables timely data-driven decision making, and creates financial accountability through collaboration between engineering, finance, and business teams. This assessment measures maturity across FinOps Capabilities to assess your organization\u2019s ability to achieve the outcomes represented by FinOps Domains.';
+    const overviewContent = state.frameworkOverview || defaultOverview;
+
+    let html = '';
+    html += '<div class="editable-section"><h2 class="section-heading">Framework Overview</h2>';
+    html += `<div id="framework-overview" class="editable-content" contenteditable="true" data-placeholder="Add a framework overview or executive summary...">${esc(overviewContent)}</div>`;
+    html += '</div>';
+
+    html += '<div class="poster">';
 
     // Overall score — centered above the poster
     html += '<div class="poster-overall">';
@@ -80,7 +73,7 @@ const Poster = (() => {
   function renderDomainCard(domain, state, isFoundation) {
     const priority = (state.priorities && state.priorities[domain.id]) || '';
 
-    let html = `<div class="domain-card${isFoundation ? ' foundation' : ''}" data-domain-id="${domain.id}">`;
+    let html = `<div class="domain-card" data-domain-id="${domain.id}">`;
 
     // Domain title row
     html += `<h2 class="domain-title">`;

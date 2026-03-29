@@ -7,23 +7,23 @@
   font-family: 'IBM Plex Sans', sans-serif;
 }
 
-/* Step 1: Domain Priority Ranking */
-.assess-priority-step {
-  background: #E5F2F7;
-  border: 1px solid #b8dce8;
+/* Step cards — unified styling */
+.assess-step-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
   border-radius: 10px;
   padding: 20px 24px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-.assess-priority-header h2 {
+.assess-step-title {
   font-size: 16px;
   font-weight: 600;
   color: #0080AF;
   margin: 0 0 4px;
 }
 
-.assess-priority-header p {
+.assess-step-desc {
   font-size: 13px;
   color: rgba(0, 0, 0, 0.55);
   margin: 0 0 16px;
@@ -70,35 +70,103 @@
   text-align: center;
 }
 
-/* Step 2 header */
-.assess-step-header {
-  font-size: 16px;
-  font-weight: 600;
-  color: #0080AF;
-  margin: 0 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #0080AF;
+/* Domain tabs */
+.assess-domain-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  position: sticky;
+  top: 52px;
+  z-index: 100;
+  background: #fff;
+  padding: 8px 0;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.assess-domain-tab {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border: 1px solid #d0e0e8;
+  border-radius: 6px;
+  background: #f8f9fa;
+  color: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.assess-domain-tab:hover {
+  background: #E5F2F7;
+  border-color: #0080AF;
+}
+
+.assess-domain-tab.active {
+  background: #0080AF;
+  color: #fff;
+  border-color: #0080AF;
+}
+
+.assess-domain-tab .tab-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.assess-domain-tab .tab-progress {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+/* Bottom domain tabs */
+.bottom-tabs {
+  position: static;
+  margin-top: 16px;
+  border-top: 1px solid #e8e8e8;
+  border-bottom: none;
+  padding-top: 8px;
 }
 
 /* Domain sections */
 .assess-domain {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-.assess-domain-header {
-  font-size: 18px;
+/* Floating View Results button */
+.assess-view-results {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
   font-weight: 600;
-  color: #0080AF;
-  padding: 8px 0;
-  border-bottom: 2px solid #0080AF;
-  margin-bottom: 12px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 24px;
+  background: #e0e0e0;
+  color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s;
+  z-index: 200;
 }
 
-.assess-domain-progress {
-  font-size: 12px;
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.56);
-  float: right;
+.assess-view-results.has-progress {
+  background: #00C693;
+  color: #fff;
+}
+
+.assess-view-results:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Capability sections */

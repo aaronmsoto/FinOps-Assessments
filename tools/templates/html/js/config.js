@@ -21,11 +21,20 @@ const Config = (() => {
     html += `</div>`;
 
     // Capabilities & Actions (unified hierarchy)
+    const showBeta = state.config.showBetaActions || false;
+    const ICON_ACTIVE = '<svg class="action-icon active" width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#00C693"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none"/></svg>';
+    const ICON_BETA = '<svg class="action-icon beta" width="14" height="14" viewBox="0 0 16 16"><path d="M8 1l7 13H1z" fill="#F59E0B"/><text x="8" y="12" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">!</text></svg>';
+
     html += `<div class="config-section">`;
     html += `<h3>Capabilities & Actions</h3>`;
+    html += `<div class="config-beta-toggle">`;
+    html += `<input type="checkbox" id="config-show-beta"${showBeta ? ' checked' : ''}>`;
+    html += `<label for="config-show-beta">Show Beta Actions <span class="beta-hint">(Weight = 0, not yet accepted)</span></label>`;
+    html += `</div>`;
     const hiddenCaps = (state.config.hiddenCapabilities || []);
+    const sortedDomains = Utils.sortDomains(specData.domains);
 
-    for (const domain of specData.domains) {
+    for (const domain of sortedDomains) {
       html += `<details class="config-domain-group" open>`;
       html += `<summary class="config-domain-title">${esc(domain.title)}</summary>`;
       html += `<div class="config-domain-body">`;
@@ -42,8 +51,11 @@ const Config = (() => {
 
         for (const action of cap.actions) {
           const currentWeight = Scoring.getEffectiveWeight(action, state.config);
-          const dimmed = currentWeight === 0 ? ' dimmed' : '';
-          html += `<div class="config-action-row${dimmed}">`;
+          const isBeta = action.weight === 0;
+          if (isBeta && !showBeta) continue;
+          const icon = currentWeight > 0 ? ICON_ACTIVE : ICON_BETA;
+          html += `<div class="config-action-row">`;
+          html += `<span class="config-action-icon">${icon}</span>`;
           html += `<span class="config-action-name" title="${esc(action.description || '')}">${esc(action.title)}</span>`;
           html += `<span class="config-action-weight">`;
           html += `<input type="number" data-weight-action="${action.id}" value="${currentWeight}" min="0" max="10" step="0.1">`;
@@ -114,6 +126,13 @@ const Config = (() => {
       App.setConfig('subtitle', e.target.value);
     });
 
+    // Show Beta Actions toggle
+    document.getElementById('config-show-beta').addEventListener('change', (e) => {
+      App.setConfig('showBetaActions', e.target.checked);
+      // Re-render config to show/hide beta actions
+      Config.render(App.getSpecData(), App.getState());
+    });
+
     // Capability visibility
     document.querySelectorAll('[data-cap-vis]').forEach(cb => {
       cb.addEventListener('change', () => {
@@ -157,7 +176,7 @@ const Config = (() => {
     // Reset
     document.getElementById('config-reset').addEventListener('click', () => {
       if (confirm('Reset all responses, configuration, and priorities? This cannot be undone.')) {
-        App.setState({ responses: {}, config: {}, priorities: {} });
+        App.setState({ responses: {}, config: {}, priorities: {}, frameworkOverview: '', finalComments: '' });
       }
     });
 

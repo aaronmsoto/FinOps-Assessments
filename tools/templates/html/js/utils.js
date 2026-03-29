@@ -37,10 +37,33 @@ const Utils = (() => {
     return 'precrawl';
   }
 
+  function getMaturityLabel(score) {
+    const level = getMaturityLevel(score);
+    if (!level) return null;
+    const labels = { run: 'Run', walk: 'Walk', crawl: 'Crawl', precrawl: 'Pre-crawl' };
+    return labels[level] || null;
+  }
+
   function getMaturitySvg(score) {
     const level = getMaturityLevel(score);
     return level ? MATURITY_SVGS[level] : '';
   }
 
-  return { SCORE_TYPES, ALL_SCORE_TYPES, esc, MATURITY_SVGS, getMaturityLevel, getMaturitySvg };
+  // Domain ordering: Understand, Quantify, Optimize, then Manage (foundation)
+  const PILLAR_ORDER = ['understand', 'quantify', 'optimize'];
+  const FOUNDATION_KW = ['manage'];
+
+  function sortDomains(domains) {
+    const pillars = domains
+      .filter(d => !FOUNDATION_KW.some(kw => d.title.toLowerCase().includes(kw)))
+      .sort((a, b) => {
+        const ai = PILLAR_ORDER.findIndex(kw => a.title.toLowerCase().includes(kw));
+        const bi = PILLAR_ORDER.findIndex(kw => b.title.toLowerCase().includes(kw));
+        return (ai >= 0 ? ai : 99) - (bi >= 0 ? bi : 99);
+      });
+    const foundation = domains.filter(d => FOUNDATION_KW.some(kw => d.title.toLowerCase().includes(kw)));
+    return [...pillars, ...foundation];
+  }
+
+  return { SCORE_TYPES, ALL_SCORE_TYPES, esc, MATURITY_SVGS, getMaturityLevel, getMaturityLabel, getMaturitySvg, sortDomains };
 })();

@@ -84,7 +84,7 @@
               "description": "Create dashboards showing cost trends by team, service, and environment.",
               "serialNumber": "001",
               "weight": 1.0,
-              "scoreType": "linear",
+              "scoreType": "threshold",
               "scoring": [
                 { "score": 0, "condition": "No cost dashboards exist" },
                 { "score": 3, "condition": "Basic cost reports available but not interactive" },
@@ -227,7 +227,7 @@
               "description": "Measure unit cost metrics tied to business output.",
               "serialNumber": "001",
               "weight": 1.0,
-              "scoreType": "value",
+              "scoreType": "calculation",
               "scoring": [
                 { "score": 0, "condition": "No unit cost metrics tracked" },
                 { "score": 5, "condition": "Unit costs calculated for some services" },

@@ -10,7 +10,7 @@
   .domain-priority-badge,
   #tab-assess,
   #validation-error,
-  footer a {
+  .assess-diagnostics {
     display: none !important;
   }
 
@@ -74,19 +74,27 @@
     text-decoration: none !important;
   }
 
-  /* Notes section in print */
-  .notes-content {
+  /* Editable sections in print */
+  .editable-content {
     border: none !important;
     padding: 8px 0 !important;
     box-shadow: none !important;
   }
 
-  .notes-content:empty {
+  .editable-content:empty {
     display: none !important;
   }
 
-  .notes-content[contenteditable] {
+  .editable-content[contenteditable] {
     -webkit-user-modify: read-only !important;
+  }
+
+  .back-to-top-container {
+    display: none !important;
+  }
+
+  .assess-view-results {
+    display: none !important;
   }
 
   /* Domain priority as static text */
