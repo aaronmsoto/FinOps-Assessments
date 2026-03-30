@@ -505,34 +505,34 @@ For `sequential` score types, the formula may contain numbered items (`1. step`,
 
 ### Phase 1: Core MVP (COMPLETED)
 
-1. **HTML composer** — New Python composer in `tools/composers/` that generates the HTML file from resolved profile data
-2. **Embedded data** — Serialize profile/domain/capability/action data as JSON
-3. **Results tab (default)** — Poster view with domain/capability layout, color-coded scores, neutral/grey unscored state
-4. **Assess tab** — Questionnaire UI with all score type controls, live updates to Results
-5. **Scoring engine** — JS implementation matching `finopspp` scoring logic
-6. **Configuration (⚙)** — Title/subtitle, capability visibility, action weight overrides
-7. **Domain priority ranking** — "Step 1" card at top of Assess tab; read-only badges on poster
-8. **LocalStorage** — Auto-save and restore assessment state (config, responses, priorities)
+1. **HTML composer** — New Python composer in `tools/composers/` that generates the HTML file from resolved profile data.
+2. **Embedded data** — Serialize profile/domain/capability/action data as JSON.
+3. **Results tab (default)** — Poster view with domain/capability layout, color-coded scores, neutral/grey unscored state.
+4. **Assess tab** — Questionnaire UI with all score type controls, live updates to Results.
+5. **Scoring engine** — JS implementation matching `finopspp` scoring logic.
+6. **Configuration (⚙)** — Title/subtitle, capability visibility, action weight overrides.
+7. **Domain priority ranking** — "Step 1" card at top of Assess tab; read-only badges on poster.
+8. **LocalStorage** — Auto-save and restore assessment state (config, responses, priorities).
+9. **Progress indicators** — For improved UX, including associated navigation improvements.
+10. **JSON export/import** — To enable portability and integration with other systems.
+11. **Print styles** — Header with title/subtitle visible in print.
 
-### Phase 2: Key Functionality (COMPLETED)
+### Phase 2: Key Additional Functionality (COMPLETED)
 
-9. **Charts** — Always-visible section below poster with three Canvas API charts: Domain Maturity (vertical columns with icons and priorities), Capability Maturity (horizontal bars grouped by domain), and Action Score Distribution (histogram with maturity-aligned buckets, high scores on left). Each with `<h3>` heading.
-10. **JSON export/import** — *(completed in Phase 1)*
-11. **Print styles** — *(completed in Phase 1)* Header with title/subtitle visible in print.
 12. **Save As HTML** — Bundled read-only template (`readonly.html`) with Results + Details tabs. "Save As Read-Only HTML" button in Config Data Management section produces a frozen snapshot.
-13. **Progress indicators** — *(completed in Phase 1)*
+13. **Charts** — Always-visible section below poster with three Canvas API charts: Domain Maturity (vertical columns with icons and priorities), Capability Maturity (horizontal bars grouped by domain), and Action Score Distribution (histogram with maturity-aligned buckets, high scores on left). Each with `<h3>` heading.
 14. **Configurable maturity thresholds** — Config section with Run/Walk/Crawl/Pre-crawl threshold values and color pickers. Changes apply in real-time to poster, charts, and scoring color scale. Defaults: >=8.0 Run, >=5.0 Walk, >=2.0 Crawl, <2.0 Pre-crawl. Maturity SVG icons (isometric cubes from FinOps Foundation) displayed next to domain scores and overall score.
-15. **Editable content sections** — *(moved from Phase 3)* Two `contenteditable` sections on the Results tab: "Framework Overview" at the top (default: FinOps definition + assessment purpose) and "Final Comments" at the bottom (default: collaborative call-to-action). Both persist to `state.frameworkOverview` and `state.finalComments` in localStorage, JSON export, and Save As HTML. Default content is captured into state on first load so it's always included in exports.
+15. **Editable content sections** — Two `contenteditable` sections on the Results tab: "Framework Overview" at the top (default: FinOps definition + assessment purpose) and "Final Comments" at the bottom (default: collaborative call-to-action). Both persist to `state.frameworkOverview` and `state.finalComments` in localStorage, JSON export, and Save As HTML. Default content is captured into state on first load so it's always included in exports. The main intent for these sections is to provide a place for Practitioners and Consultants to add their own optional commentary.
 
 ### Phase 3: Branding and Accessibility Enhancements
 
-16. **Branding** — Consultancy/client names, logos (data URI), brand colors in ⚙ config
-17. **Dark mode** — Respect `prefers-color-scheme` media query
+16. **Branding** — Consultancy/client names, logos (data URI), brand colors in ⚙ config.
+17. **Dark mode** — Respect `prefers-color-scheme` media query.
 
 ### Phase 4: Comparison and Guidance Enhancements
 
-18. **Comparison mode** — Load two JSON exports side-by-side to show progress over time
-19. **Guidance panel** — Show supplemental guidance and references inline during assessment
+18. **Comparison mode** — Load two JSON exports side-by-side to show progress over time.
+19. **Guidance panel** — Show supplemental guidance and references inline during assessment.
 
 ---
 
