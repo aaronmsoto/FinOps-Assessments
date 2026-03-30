@@ -16,6 +16,7 @@ A single, fully self-contained HTML file (all CSS, JS, and assets inlined) that:
 - Works offline in any modern browser with zero external dependencies
 - Provides a two-tab experience — **Results** (poster view + charts, default) and **Assess** (questionnaire) — with a gear icon (⚙) for configuration
 - Auto-saves progress to `localStorage` with JSON export/import for portability
+- Includes a Save As Readonly HTML option to share an interactive, non-editable copy of the assessment
 - Produces print-friendly output for PDF delivery via `Ctrl+P`
 
 ---
@@ -502,7 +503,7 @@ For `sequential` score types, the formula may contain numbered items (`1. step`,
 
 ## Implementation Plan
 
-### Phase 1: Core (MVP)
+### Phase 1: Core MVP (COMPLETED)
 
 1. **HTML composer** — New Python composer in `tools/composers/` that generates the HTML file from resolved profile data
 2. **Embedded data** — Serialize profile/domain/capability/action data as JSON
@@ -513,7 +514,7 @@ For `sequential` score types, the formula may contain numbered items (`1. step`,
 7. **Domain priority ranking** — "Step 1" card at top of Assess tab; read-only badges on poster
 8. **LocalStorage** — Auto-save and restore assessment state (config, responses, priorities)
 
-### Phase 2: Polish
+### Phase 2: Key Functionality (COMPLETED)
 
 9. **Charts** — Always-visible section below poster with three Canvas API charts: Domain Maturity (vertical columns with icons and priorities), Capability Maturity (horizontal bars grouped by domain), and Action Score Distribution (histogram with maturity-aligned buckets, high scores on left). Each with `<h3>` heading.
 10. **JSON export/import** — *(completed in Phase 1)*
@@ -523,12 +524,15 @@ For `sequential` score types, the formula may contain numbered items (`1. step`,
 14. **Configurable maturity thresholds** — Config section with Run/Walk/Crawl/Pre-crawl threshold values and color pickers. Changes apply in real-time to poster, charts, and scoring color scale. Defaults: >=8.0 Run, >=5.0 Walk, >=2.0 Crawl, <2.0 Pre-crawl. Maturity SVG icons (isometric cubes from FinOps Foundation) displayed next to domain scores and overall score.
 15. **Editable content sections** — *(moved from Phase 3)* Two `contenteditable` sections on the Results tab: "Framework Overview" at the top (default: FinOps definition + assessment purpose) and "Final Comments" at the bottom (default: collaborative call-to-action). Both persist to `state.frameworkOverview` and `state.finalComments` in localStorage, JSON export, and Save As HTML. Default content is captured into state on first load so it's always included in exports.
 
-### Phase 3: Enhancements
+### Phase 3: Branding and Accessibility Enhancements
 
 16. **Branding** — Consultancy/client names, logos (data URI), brand colors in ⚙ config
-17. **Comparison mode** — Load two JSON exports side-by-side to show progress over time
-18. **Guidance panel** — Show supplemental guidance and references inline during assessment
-19. **Dark mode** — Respect `prefers-color-scheme` media query
+17. **Dark mode** — Respect `prefers-color-scheme` media query
+
+### Phase 4: Comparison and Guidance Enhancements
+
+18. **Comparison mode** — Load two JSON exports side-by-side to show progress over time
+19. **Guidance panel** — Show supplemental guidance and references inline during assessment
 
 ---
 
